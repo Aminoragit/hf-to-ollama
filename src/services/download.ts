@@ -49,13 +49,16 @@ export async function downloadGgufFile(target: DownloadTarget): Promise<Download
 
   const totalBytes = size || Number(response.headers.get("content-length")) || 0;
   const startedAt = Date.now();
+
+  // 이전 다운로드 실패로 남아있을 수 있는 .part 파일을 먼저 정리
+  await rm(partialPath, { force: true });
+
   const writer = createWriteStream(partialPath);
   const reader = response.body.getReader();
   let receivedBytes = 0;
   let lastDrawnAt = 0;
 
   try {
-    await rm(partialPath, { force: true });
 
     while (true) {
       const { done, value } = await reader.read();
