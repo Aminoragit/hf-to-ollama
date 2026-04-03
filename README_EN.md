@@ -110,7 +110,8 @@ hf-to-ollama install
 ```
 
 **📌 Process:**
-1. Enter the Hugging Face repository path (e.g., `username/repo`)
+1. **Choose Input Mode**: Select either `Enter Repository ID directly` (e.g., `username/repo`) or `Search models by name`.
+   - **(If Search is selected)**: Simply type a keyword, and the tool will fetch and display the most popular models featuring GGUF formats directly from the Hugging Face Hub in real-time. Use arrow keys to select your model.
 2. Select the main **GGUF file** from the list
 3. Confirm and select an ADAPTER (e.g., LoRA) file if needed
 4. Set hardware generation parameters (`temperature`, `top_p`, `top_k`, `num_ctx`)
