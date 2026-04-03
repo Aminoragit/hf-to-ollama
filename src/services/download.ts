@@ -38,6 +38,20 @@ export async function downloadGgufFile(target: DownloadTarget): Promise<Download
   const partialPath = `${outputPath}.part`;
 
   const { url, size } = await getDownloadUrl(target.repoId, target.file.path, target.revision, target.accessToken);
+
+  try {
+    const existingStat = await stat(outputPath);
+    if (size > 0 && existingStat.size === size) {
+      return {
+        filePath: outputPath,
+        bytesWritten: size,
+        alreadyExists: true,
+      };
+    }
+  } catch {
+    // ignore
+  }
+
   const response = await fetch(url, {
     headers: authHeaders(target.accessToken),
     redirect: "follow",

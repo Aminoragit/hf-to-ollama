@@ -28,6 +28,7 @@ export interface DownloadTarget {
 export interface DownloadResult {
   filePath: string;
   bytesWritten: number;
+  alreadyExists?: boolean;
 }
 
 export interface OllamaCreateInput {

@@ -92,6 +92,23 @@ export async function selectConfigAction(): Promise<"show" | "update" | "delete"
   });
 }
 
+export async function selectAdapterAction(currentAdapter?: string): Promise<"keep" | "remove" | "change"> {
+  const choices: { name: string; value: "keep" | "remove" | "change" }[] = [
+    { name: t("choice.keep_adapter", { current: currentAdapter ?? "None" }), value: "keep" },
+  ];
+
+  if (currentAdapter) {
+    choices.push({ name: t("choice.remove_adapter"), value: "remove" });
+  }
+
+  choices.push({ name: t("choice.change_adapter"), value: "change" });
+
+  return select<"keep" | "remove" | "change">({
+    message: t("prompt.adapter_action"),
+    choices,
+  });
+}
+
 export async function confirmDeleteLocalFiles(): Promise<boolean> {
   return confirm({
     message: t("prompt.delete_local"),

@@ -170,14 +170,23 @@ export async function importFromHuggingFace(repoId: string, options: CliOptions)
 
   info(t("info.download_model_start"));
   const downloadResult = await downloadGgufFile({ repoId, file: selectedFile, revision: options.revision, accessToken, targetDir });
-  success(t("success.download_complete", { path: downloadResult.filePath, size: formatBytes(downloadResult.bytesWritten) }));
+  if (downloadResult.alreadyExists) {
+    success(t("success.already_downloaded", { path: downloadResult.filePath, size: formatBytes(downloadResult.bytesWritten) }));
+  } else {
+    success(t("success.download_complete", { path: downloadResult.filePath, size: formatBytes(downloadResult.bytesWritten) }));
+  }
 
   let adapterFilename: string | undefined;
   if (selectedAdapterFile) {
     info(t("info.download_adapter_start"));
     const adapterDownloadResult = await downloadGgufFile({ repoId, file: selectedAdapterFile, revision: options.revision, accessToken, targetDir });
     adapterFilename = path.basename(adapterDownloadResult.filePath);
-    success(t("success.adapter_download_complete", { path: adapterDownloadResult.filePath, size: formatBytes(adapterDownloadResult.bytesWritten) }));
+    
+    if (adapterDownloadResult.alreadyExists) {
+      success(t("success.already_downloaded", { path: adapterDownloadResult.filePath, size: formatBytes(adapterDownloadResult.bytesWritten) }));
+    } else {
+      success(t("success.adapter_download_complete", { path: adapterDownloadResult.filePath, size: formatBytes(adapterDownloadResult.bytesWritten) }));
+    }
   }
 
   const modelfilePath = await writeModelfile(targetDir, {
