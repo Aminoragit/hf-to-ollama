@@ -1,64 +1,78 @@
-# 🦙 ollama-hf-install
-
 <div align="center">
+  <h1>🦙 ollama-hf-install</h1>
   <p><strong>A CLI tool to easily install and manage Hugging Face GGUF files in Ollama 🚀</strong></p>
+
+  <br />
+
   <p>
-    <a href="README.md">한국어</a> |
-    🌍 <a href="README_EN.md">English</a> |
-    <a href="README_JA.md">日本語</a> |
-    <a href="README_ZH.md">中文</a>
+    <a href="./README.md" title="한국어 (Korean)"><img src="https://flagicons.lipis.dev/flags/4x3/kr.svg" width="24" height="18" alt="KR" style="vertical-align: middle; border-radius: 2px;" /> <strong>Korean</strong></a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="./README_EN.md" title="English"><img src="https://flagicons.lipis.dev/flags/4x3/us.svg" width="24" height="18" alt="US" style="vertical-align: middle; border-radius: 2px;" /> <strong>English</strong></a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="./README_JA.md" title="日本語 (Japanese)"><img src="https://flagicons.lipis.dev/flags/4x3/jp.svg" width="24" height="18" alt="JP" style="vertical-align: middle; border-radius: 2px;" /> <strong>Japanese</strong></a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="./README_ZH.md" title="中文 (Chinese)"><img src="https://flagicons.lipis.dev/flags/4x3/cn.svg" width="24" height="18" alt="CN" style="vertical-align: middle; border-radius: 2px;" /> <strong>Chinese</strong></a>
   </p>
 </div>
 
+<br />
+
 ---
 
-<br>
+<br />
 
 > `ollama-hf-install` is a utility tool that lets you seamlessly download Hugging Face GGUF files via an interactive step-by-step selection process, and immediately create them as Ollama models.
 >
 > It also offers easy management of your installed models, including parameter modification and deletion.
 
-<br>
+<br />
+<br />
 
 ## ✨ Features
 
-<br>
+<br />
 
 - **📥 Intuitive Installation (Install)**  
   Supports selecting GGUF and ADAPTER files, configuring parameters, auto-downloading, and creating models seamlessly.
+  <br />
 
 - **⚙️ Simple Management (Config)**  
   Provides features to inspect the generated `Modelfile`, quickly regenerate models with updated parameters, and delete installed models with a single click.
+  <br />
 
 - **🤖 Fast Non-interactive Mode**  
   Supports passing configuration via CLI parameters directly, allowing you to bypass prompts entirely. Ideal for shell scripts and automated (CI/CD) pipelines.
 
-<br>
+<br />
+<br />
 
 ---
 
-<br>
+<br />
+<br />
 
 ## 📋 Prerequisites
 
-<br>
+<br />
 
 Before using this tool, make sure you have the following installed:
 
 - **[Node.js](https://nodejs.org/)** (Version 22 or higher)
 - **[Ollama](https://ollama.com/)** (Must be pre-installed and running as a background service)
-- *(Optional)* **[Hugging Face Access Token](https://huggingface.co/settings/tokens)** 
+- *(Optional)* **[Hugging Face Access Token](https://huggingface.co/settings/tokens)**  
   (Required for private or gated models. Supply it via the `HF_TOKEN` environment variable or `--token` option)
 
-<br>
+<br />
+<br />
 
 ---
 
-<br>
+<br />
+<br />
 
 ## 📦 Installation
 
-<br>
+<br />
 
 To build and run in your **local environment**:
 
@@ -66,7 +80,8 @@ To build and run in your **local environment**:
 npm install
 npm run build
 ```
-<br>
+
+<br />
 
 To install **globally** via NPM:
 
@@ -74,15 +89,17 @@ To install **globally** via NPM:
 npm install -g ollama-hf-install
 ```
 
-<br>
+<br />
+<br />
 
 ---
 
-<br>
+<br />
+<br />
 
 ## 💻 Usage Guide
 
-<br>
+<br />
 
 ### 1️⃣ Interactive Install
 
@@ -92,7 +109,7 @@ Execute the installation command and follow the terminal prompts to easily insta
 ollama-hf-install install
 ```
 
-**Process:**
+**📌 Process:**
 1. Enter the Hugging Face repository path (e.g., `username/repo`)
 2. Select the main **GGUF file** from the list
 3. Confirm and select an ADAPTER (e.g., LoRA) file if needed
@@ -100,7 +117,8 @@ ollama-hf-install install
 5. Specify your **local save directory**
 6. Watch the download progress, followed by automatic `Modelfile` generation and `ollama create`
 
-<br>
+<br />
+<br />
 
 ### 2️⃣ Configuration
 
@@ -115,7 +133,8 @@ ollama-hf-install config
 - **Update (Regenerate)** models easily by tweaking parameters
 - **Remove** unused models
 
-<br>
+<br />
+<br />
 
 ### 3️⃣ Non-interactive Install (for Scripts)
 
@@ -140,11 +159,13 @@ ollama-hf-install install \
 
 *💡 Append `--token <your_access_token>` to the command if you're trying to download gated models.*
 
-<br>
+<br />
+<br />
 
 ---
 
-<br>
+<br />
+<br />
 
 ## 📝 Generated Modelfile Example
 
@@ -159,4 +180,4 @@ PARAMETER top_k 64
 PARAMETER num_ctx 32768
 ```
 
-<br>
+<br />
