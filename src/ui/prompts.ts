@@ -33,17 +33,9 @@ export async function inputOptionalParameter(label: string, defaultValue = ""): 
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-export async function selectGgufFile(files: HfFileEntry[], message = t("prompt.model_file")): Promise<HfFileEntry> {
-  return select<HfFileEntry>({
-    message,
-    choices: files.map((file) => ({
-      name: `${file.path} (${formatBytes(file.size)})`,
-      value: file,
-      description: file.revision ? `revision: ${file.revision}` : undefined,
-    })),
-    pageSize: 15,
-  });
-}
+export { navigateAndSelectFile } from "./navigation.js";
+
+
 
 export async function inputModelName(defaultValue: string): Promise<string> {
   return input({

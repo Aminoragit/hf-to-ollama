@@ -9,6 +9,7 @@ export interface CliOptions {
   nonInteractive?: boolean;
   yes?: boolean;
   dryRun?: boolean;
+  local?: string;
 }
 
 export interface HfFileEntry {

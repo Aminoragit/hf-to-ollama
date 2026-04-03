@@ -19,6 +19,7 @@ const ko: MessageMap = {
   "opt.non_interactive": "대화형 입력 없이 실행",
   "opt.yes": "기존 파일이 있어도 자동 덮어쓰기",
   "opt.dry_run": "실제 다운로드와 ollama create 없이 계획만 출력",
+  "opt.local": "Hugging Face 다운로드 대신 사용할 로컬 GGUF 디렉토리",
   "error.unknown": "알 수 없는 오류가 발생했습니다.",
   "prompt.repo": "Hugging Face 경로를 입력하세요.",
   "prompt.repo.required": "Hugging Face 경로를 입력해야 합니다.",
@@ -34,13 +35,18 @@ const ko: MessageMap = {
   "prompt.select_action": "실행할 작업을 선택하세요.",
   "prompt.adapter_action": "ADAPTER 설정을 변경하시겠습니까?",
   "prompt.delete_local": "로컬 GGUF/Modelfile 저장 디렉터리도 함께 삭제하시겠습니까?",
+  "prompt.select_format": "저장소에 GGUF와 Safetensors가 모두 존재합니다. 어떤 방식으로 설치하시겠습니까?",
   "choice.show": "View (Modelfile 보기)",
   "choice.update": "Edit (모델 설정 편집)",
   "choice.delete": "설치 모델 삭제",
   "choice.keep_adapter": (params) => `현재 ADAPTER 유지 (${params.current})`,
   "choice.remove_adapter": "ADAPTER 제거",
   "choice.change_adapter": "새 ADAPTER 선택",
-  "info.found_gguf": (params) => `GGUF 파일 ${params.count}개를 찾았습니다.`,
+  "choice.format_gguf": "GGUF 모델 설치",
+  "choice.format_gguf_desc": "단일 GGUF 파일을 하나만 다운로드하여 빠르게 설치합니다.",
+  "choice.format_safetensors": "Safetensors 저장소 설치",
+  "choice.format_safetensors_desc": "핵심 파일 전체(.safetensors, .json 등)를 일괄 다운로드한 후, Ollama를 통해 변환을 수행합니다.",
+  "info.found_gguf": (params) => `탐색 기능용으로 파일 ${params.count}개를 찾았습니다.`,
   "info.adapter_candidates": (params) => `ADAPTER 후보 ${params.count}개를 찾았습니다.`,
   "info.selected_model": (params) => `선택된 본체 파일: ${params.path} (${params.size})`,
   "info.selected_adapter": (params) => `선택된 ADAPTER 파일: ${params.path} (${params.size})`,
@@ -78,7 +84,8 @@ const ko: MessageMap = {
   "err.ollama_create": (params) => `ollama create 실패: ${params.message}`,
   "err.ollama_create_unknown": "ollama create 실행 중 알 수 없는 오류가 발생했습니다.",
   "err.ollama_rm": (params) => `ollama rm 실패: ${params.message}`,
-  "err.ollama_rm_unknown": "ollama rm 실행 중 알 수 없는 오류가 발생했습니다."
+  "err.ollama_rm_unknown": "ollama rm 실행 중 알 수 없는 오류가 발생했습니다.",
+  "err.local_dir_error": (params) => `로컬 디렉터리를 읽을 수 없습니다: ${params.path}`
 };
 
 const en: MessageMap = {
@@ -96,6 +103,7 @@ const en: MessageMap = {
   "opt.non_interactive": "Run without interactive prompts",
   "opt.yes": "Overwrite existing files automatically",
   "opt.dry_run": "Show the plan without downloading or running ollama create",
+  "opt.local": "Local directory containing GGUF files to use instead of Hugging Face",
   "error.unknown": "An unknown error occurred.",
   "prompt.repo": "Enter the Hugging Face path.",
   "prompt.repo.required": "You must enter a Hugging Face path.",
@@ -111,13 +119,18 @@ const en: MessageMap = {
   "prompt.select_action": "Choose an action.",
   "prompt.adapter_action": "Do you want to change the ADAPTER?",
   "prompt.delete_local": "Also delete the local GGUF/Modelfile directory?",
+  "prompt.select_format": "Both GGUF and Safetensors exist in this repository. How would you like to install?",
   "choice.show": "View Modelfile",
   "choice.update": "Edit Model configuration",
   "choice.delete": "Delete installed model",
   "choice.keep_adapter": (params) => `Keep current ADAPTER (${params.current})`,
   "choice.remove_adapter": "Remove ADAPTER",
   "choice.change_adapter": "Select a new ADAPTER",
-  "info.found_gguf": (params) => `Found ${params.count} GGUF files.`,
+  "choice.format_gguf": "Install GGUF Model",
+  "choice.format_gguf_desc": "Download a single GGUF file for fast installation.",
+  "choice.format_safetensors": "Install Safetensors Repository",
+  "choice.format_safetensors_desc": "Batch download core files (.safetensors, .json) and auto-convert internally via Ollama.",
+  "info.found_gguf": (params) => `Found ${params.count} files for navigation.`,
   "info.adapter_candidates": (params) => `Found ${params.count} ADAPTER candidates.`,
   "info.selected_model": (params) => `Selected main file: ${params.path} (${params.size})`,
   "info.selected_adapter": (params) => `Selected ADAPTER file: ${params.path} (${params.size})`,
@@ -155,7 +168,8 @@ const en: MessageMap = {
   "err.ollama_create": (params) => `ollama create failed: ${params.message}`,
   "err.ollama_create_unknown": "An unknown error occurred while running ollama create.",
   "err.ollama_rm": (params) => `ollama rm failed: ${params.message}`,
-  "err.ollama_rm_unknown": "An unknown error occurred while running ollama rm."
+  "err.ollama_rm_unknown": "An unknown error occurred while running ollama rm.",
+  "err.local_dir_error": (params) => `Could not read local directory: ${params.path}`
 };
 
 const ja: MessageMap = {
@@ -183,22 +197,27 @@ const ja: MessageMap = {
   "choice.show": "View Modelfile (詳細を見る)",
   "choice.update": "Edit (設定を編集する)",
   "choice.delete": "インストール済みモデルを削除",
-  "info.found_gguf": (p) => `GGUF ファイルが ${p.count} 件見つかりました。`,
+  "info.found_gguf": (p) => `ナビゲーション用にファイルを ${p.count} 個見つけました。`,
   "info.adapter_candidates": (p) => `ADAPTER 候補が ${p.count} 件見つかりました。`,
   "info.selected_model": (p) => `選択したメインファイル: ${p.path} (${p.size})`,
   "info.selected_adapter": (p) => `選択した ADAPTER ファイル: ${p.path} (${p.size})`,
   "info.parameters_applied": (p) => `ユーザーパラメータ ${p.count} 件を適用します。`,
   "info.target_dir": (p) => `保存先ディレクトリ: ${p.path}`,
   "info.ollama_command": (p) => `Ollama 実行ファイル: ${p.cmd}`,
-  "info.download_model_start": "メイン GGUF のダウンロードを開始します。進行バーを確認してください。",
-  "info.download_adapter_start": "ADAPTER GGUF のダウンロードを開始します。進行バーを確認してください。",
+  "info.download_model_start": "メインモデルのダウンロードを開始します。進行バーを確認してください。",
+  "info.download_adapter_start": "ADAPTERのダウンロードを開始します。進行バーを確認してください。",
   "info.modelfile_created": (p) => `Modelfile を作成しました: ${p.path}`,
   "info.model_create_start": "Ollama モデルの作成を開始します。",
   "info.run_command": (p) => `実行コマンド: ollama run ${p.model}`,
   "success.download_complete": (p) => `ダウンロード完了: ${p.path} (${p.size})`,
   "success.adapter_download_complete": (p) => `ADAPTER ダウンロード完了: ${p.path} (${p.size})`,
   "success.model_created": (p) => `Ollama モデルを作成しました: ${p.model}`,
-  "success.model_deleted": (p) => `Ollama モデルを削除しました: ${p.model}`
+  "success.model_deleted": (p) => `Ollama モデルを削除しました: ${p.model}`,
+  "prompt.select_format": "リポジトリにGGUFとSafetensorsの両方が存在します。どちらの形式でインストールしますか？",
+  "choice.format_gguf": "GGUFモデルをインストール",
+  "choice.format_gguf_desc": "単一のGGUFファイルを1つだけダウンロードして高速にインストールします。",
+  "choice.format_safetensors": "Safetensorsリポジトリをインストール",
+  "choice.format_safetensors_desc": "コアファイル（.safetensors, .json等）を一括ダウンロード後、Ollama内部で変換します。"
 };
 
 const zh: MessageMap = {
@@ -222,17 +241,22 @@ const zh: MessageMap = {
   "choice.show": "View Modelfile (查看配置)",
   "choice.update": "Edit (编辑模型配置)",
   "choice.delete": "删除已安装模型",
-  "info.found_gguf": (p) => `找到 ${p.count} 个 GGUF 文件。`,
+  "info.found_gguf": (p) => `找到 ${p.count} 个用于导航的文件。`,
   "info.adapter_candidates": (p) => `找到 ${p.count} 个 ADAPTER 候选项。`,
   "info.selected_model": (p) => `已选择主文件: ${p.path} (${p.size})`,
   "info.selected_adapter": (p) => `已选择 ADAPTER 文件: ${p.path} (${p.size})`,
   "info.parameters_applied": (p) => `应用 ${p.count} 个用户参数。`,
   "info.target_dir": (p) => `目标目录: ${p.path}`,
-  "info.download_model_start": "开始下载主 GGUF。请查看下面的进度条。",
-  "info.download_adapter_start": "开始下载 ADAPTER GGUF。请查看下面的进度条。",
+  "info.download_model_start": "开始下载主模型。请查看下面的进度条。",
+  "info.download_adapter_start": "开始下载 ADAPTER。请查看下面的进度条。",
   "info.model_create_start": "开始创建 Ollama 模型。",
   "success.model_created": (p) => `Ollama 模型已创建: ${p.model}`,
-  "success.model_deleted": (p) => `Ollama 模型已删除: ${p.model}`
+  "success.model_deleted": (p) => `Ollama 模型已删除: ${p.model}`,
+  "prompt.select_format": "存储库中同时存在 GGUF 和 Safetensors。请问您想要以哪种格式安装？",
+  "choice.format_gguf": "安装 GGUF 模型",
+  "choice.format_gguf_desc": "大模型快速安装（仅下载单个预量化 GGUF 文件）。",
+  "choice.format_safetensors": "安装 Safetensors 存储库",
+  "choice.format_safetensors_desc": "批量下载核心文件（.safetensors，.json等）后，通过 Ollama 内部转化为模型。"
 };
 
 const hi: MessageMap = {

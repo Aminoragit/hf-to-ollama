@@ -6,7 +6,7 @@ function buildAccessParams(accessToken?: string): { accessToken?: string } {
   return accessToken ? { accessToken } : {};
 }
 
-export async function getGgufFiles(
+export async function getRepoFiles(
   repoId: string,
   revision?: string,
   accessToken?: string,
@@ -20,10 +20,6 @@ export async function getGgufFiles(
     ...buildAccessParams(accessToken),
   })) {
     if (entry.type !== "file") {
-      continue;
-    }
-
-    if (!entry.path.toLowerCase().endsWith(".gguf")) {
       continue;
     }
 

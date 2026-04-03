@@ -1,14 +1,14 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { getGgufFiles } from "../adapters/hf.js";
+import { getRepoFiles } from "../adapters/hf.js";
 import { createModel, deleteModel, ensureOllamaServer } from "../adapters/ollama.js";
 import { CliError } from "../errors.js";
 import { t } from "../i18n.js";
 import { downloadGgufFile } from "../services/download.js";
 import { loadInstallManifests, removeInstallDirectory, saveInstallManifest } from "../services/manifest.js";
 import { writeModelfile } from "../services/modelfile.js";
-import { confirmDeleteLocalFiles, inputOptionalParameter, selectConfigAction, selectManifest, selectAdapterAction, selectGgufFile } from "../ui/prompts.js";
+import { confirmDeleteLocalFiles, inputOptionalParameter, selectConfigAction, selectManifest, selectAdapterAction, navigateAndSelectFile } from "../ui/prompts.js";
 import { info, success, formatBytes } from "../ui/output.js";
 import type { HfFileEntry, InstallManifest, ParameterEntry } from "../types.js";
 
@@ -79,13 +79,13 @@ export async function runConfigCommand(): Promise<void> {
     updatedAdapterFilename = undefined;
   } else if (adapterAction === "change") {
     const accessToken = process.env.HF_TOKEN ?? process.env.HUGGING_FACE_HUB_TOKEN;
-    const files = await getGgufFiles(selectedManifest.repoId, undefined, accessToken);
-    const adapterCandidates = files.filter((file: HfFileEntry) => path.basename(file.path) !== selectedManifest.ggufFilename);
+    const files = await getRepoFiles(selectedManifest.repoId, undefined, accessToken);
+    const adapterCandidates = files.filter((file: HfFileEntry) => path.basename(file.path) !== selectedManifest.ggufFilename && Boolean(file.path.toLowerCase().endsWith(".gguf") || file.path.toLowerCase().endsWith(".safetensors")));
     if (adapterCandidates.length === 0) {
       throw new CliError(t("err.no_gguf"));
     }
     
-    const newAdapterFile = await selectGgufFile(adapterCandidates, t("prompt.use_adapter"));
+    const newAdapterFile = await navigateAndSelectFile(adapterCandidates, t("prompt.use_adapter"));
     info(t("info.download_adapter_start"));
     const downloadResult = await downloadGgufFile({
       repoId: selectedManifest.repoId,

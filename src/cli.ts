@@ -36,6 +36,7 @@ async function main(): Promise<void> {
     .option("--non-interactive", t("opt.non_interactive"))
     .option("--yes", t("opt.yes"))
     .option("--dry-run", t("opt.dry_run"))
+    .option("--local <directory>", t("opt.local"))
     .action(async (options: CliOptions & { repo?: string }) => {
       await runInstallCommand(options);
     });
