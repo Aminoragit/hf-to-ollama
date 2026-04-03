@@ -1,4 +1,4 @@
-import { readdir, stat } from "node:fs/promises";
+import { readdir, stat, lstat } from "node:fs/promises";
 import path from "node:path";
 
 import type { HfFileEntry } from "../types.js";
@@ -9,15 +9,21 @@ async function walkDir(dir: string, fileList: HfFileEntry[], baseDir: string = d
   const entries = await readdir(dir, { withFileTypes: true });
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
+    
+    // 보안: 심볼릭 링크 판별 (Simlink 악용을 통한 시스템 파일 유출 방지)
+    const entryStat = await lstat(fullPath);
+    if (entryStat.isSymbolicLink()) {
+      continue; // 심볼릭 링크는 무조건 무시
+    }
+
+    if (entryStat.isDirectory()) {
       await walkDir(fullPath, fileList, baseDir);
-    } else if (entry.isFile()) {
-      const stats = await stat(fullPath);
+    } else if (entryStat.isFile()) {
       // Construct a relative path like HF does so navigation works the same way
       const relativePath = path.relative(baseDir, fullPath).replace(/\\/g, "/");
       fileList.push({
         path: relativePath,
-        size: stats.size,
+        size: entryStat.size,
         revision: "local",
       });
     }

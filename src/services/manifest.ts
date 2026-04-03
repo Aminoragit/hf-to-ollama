@@ -41,9 +41,23 @@ export async function loadInstallManifests(): Promise<InstallManifest[]> {
     return [];
   }
 
-  const manifests = await Promise.all(
-    manifestPaths.map(async (manifestPath) => JSON.parse(await readFile(manifestPath, "utf8")) as InstallManifest),
-  );
+  const manifests = (await Promise.all(
+    manifestPaths.map(async (manifestPath) => {
+      try {
+        const raw = JSON.parse(await readFile(manifestPath, "utf8"));
+        
+        // 보안/안전: 런타임 타입 검증 (기본 필수 필드만 확인)
+        if (!raw || typeof raw !== "object") return null;
+        if (typeof raw.modelName !== "string" || typeof raw.repoId !== "string" || typeof raw.targetDir !== "string" || typeof raw.ggufFilename !== "string") {
+          return null;
+        }
+
+        return raw as InstallManifest;
+      } catch {
+        return null; // 파싱 실패나 무효한 매니페스트 무시
+      }
+    })
+  )).filter((m): m is InstallManifest => m !== null);
 
   return manifests.sort((left, right) => left.modelName.localeCompare(right.modelName));
 }

@@ -14,7 +14,12 @@ export async function writeModelfile(targetDir: string, options: ModelfileOption
   }
 
   for (const parameter of options.parameters ?? []) {
-    lines.push(`PARAMETER ${parameter.key} ${parameter.value}`);
+    const key = parameter.key.trim();
+    const value = parameter.value.trim();
+    if (/[\r\n]/.test(key) || /[\r\n]/.test(value)) {
+      throw new Error(`보안 오류: Modelfile 파라미터에 줄바꿈 문자를 사용할 수 없습니다 (key: ${key}, value: ${value})`);
+    }
+    lines.push(`PARAMETER ${key} ${value}`);
   }
 
   const contents = `${lines.join("\n")}\n`;

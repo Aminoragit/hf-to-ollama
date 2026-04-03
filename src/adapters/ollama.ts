@@ -8,6 +8,14 @@ import { CliError } from "../errors.js";
 import { t } from "../i18n.js";
 import type { OllamaCreateInput } from "../types.js";
 
+// 보안: 모델 이름에 쉘 메타문자, 경로 구분자 등 위험 문자가 포함되지 않도록 검증
+const SAFE_MODEL_NAME = /^[a-zA-Z0-9][a-zA-Z0-9._:/-]*$/;
+function validateModelName(name: string): void {
+  if (!SAFE_MODEL_NAME.test(name) || name.includes("..")) {
+    throw new CliError(`보안 오류: 모델 이름에 허용되지 않는 문자가 포함되어 있습니다: ${name}`);
+  }
+}
+
 async function canExecute(command: string, args: string[]): Promise<boolean> {
   try {
     await execa(command, args);
@@ -87,6 +95,7 @@ export async function ensureOllamaServer(): Promise<void> {
 }
 
 export async function createModel({ modelName, modelfilePath, cwd }: OllamaCreateInput): Promise<void> {
+  validateModelName(modelName);
   const ollamaCommand = await resolveOllamaCommand();
 
   try {
@@ -105,6 +114,7 @@ export async function createModel({ modelName, modelfilePath, cwd }: OllamaCreat
 }
 
 export async function deleteModel(modelName: string): Promise<void> {
+  validateModelName(modelName);
   const ollamaCommand = await resolveOllamaCommand();
 
   try {

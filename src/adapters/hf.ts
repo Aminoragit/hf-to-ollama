@@ -1,4 +1,4 @@
-import { fileDownloadInfo, listFiles } from "@huggingface/hub";
+import { fileDownloadInfo, listFiles, listModels } from "@huggingface/hub";
 
 import type { HfFileEntry } from "../types.js";
 
@@ -54,4 +54,23 @@ export async function getDownloadUrl(
     url: info.url,
     size: info.size,
   };
+}
+
+export async function searchModels(
+  query: string,
+  limit: number = 20,
+): Promise<{ id: string; downloads: number; likes: number }[]> {
+  const results: { id: string; downloads: number; likes: number }[] = [];
+  try {
+    for await (const model of listModels({ search: { query, tags: ["gguf"] }, limit })) {
+      results.push({
+        id: model.name,
+        downloads: model.downloads ?? 0,
+        likes: model.likes ?? 0,
+      });
+    }
+  } catch (error) {
+    // Ignore errors during interactive search typing
+  }
+  return results.sort((a, b) => b.downloads - a.downloads);
 }

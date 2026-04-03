@@ -3,12 +3,54 @@ import { confirm, input, select } from "@inquirer/prompts";
 import { t } from "../i18n.js";
 import type { HfFileEntry, InstallManifest } from "../types.js";
 import { formatBytes } from "./output.js";
+import { searchModels } from "../adapters/hf.js";
+import patchedSearch from "./patched-search.js";
+
+export async function selectInputMode(): Promise<"direct" | "search"> {
+  return select<"direct" | "search">({
+    message: t("prompt.select_input_mode"),
+    choices: [
+      { name: t("choice.input_direct"), value: "direct" },
+      { name: t("choice.input_search"), value: "search" },
+    ],
+  });
+}
 
 export async function inputRepoId(): Promise<string> {
   return input({
     message: t("prompt.repo"),
     validate(value: string) {
       return value.trim().length > 0 ? true : t("prompt.repo.required");
+    },
+  });
+}
+
+export async function searchRepoId(): Promise<string> {
+  return patchedSearch<string>({
+    message: t("prompt.search_query"),
+    source: async (term: string | undefined, opt: any) => {
+      if (!term || term.trim().length === 0) {
+        return [];
+      }
+
+      // 보안/과부하 방지 (Debounce): 사용자가 빠르게 타이핑할 때마다 HF API가
+      // 폭주하는 것을 막기 위해 300ms 지연 대기. 도중에 새 키 입력이 들어오면
+      // AbortSignal이 발생하여 이전 요청은 API 통신 전에 취소됨.
+      await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(resolve, 300);
+        opt.signal.addEventListener("abort", () => {
+          clearTimeout(timeout);
+          reject(new Error("aborted"));
+        });
+      });
+      
+      const models = await searchModels(term, 15);
+      
+      return models.map((model) => ({
+        name: `${model.id} (⬇ ${model.downloads})`,
+        value: model.id,
+        description: `Likes: ${model.likes} | Downloads: ${model.downloads}`,
+      }));
     },
   });
 }

@@ -35,6 +35,14 @@ export async function downloadGgufFile(target: DownloadTarget): Promise<Download
 
   const filename = path.basename(target.file.path);
   const outputPath = path.join(target.targetDir, filename);
+
+  // 보안: 경로 탐색(Path Traversal) 방지 — targetDir 바깥으로 쓰기 차단
+  const resolvedOutput = path.resolve(outputPath);
+  const resolvedTarget = path.resolve(target.targetDir);
+  if (!resolvedOutput.startsWith(resolvedTarget + path.sep) && resolvedOutput !== resolvedTarget) {
+    throw new CliError(`보안 오류: 파일 경로가 저장 디렉터리 범위를 벗어납니다: ${filename}`);
+  }
+
   const partialPath = `${outputPath}.part`;
 
   const { url, size } = await getDownloadUrl(target.repoId, target.file.path, target.revision, target.accessToken);
@@ -67,10 +75,16 @@ export async function downloadGgufFile(target: DownloadTarget): Promise<Download
   // 이전 다운로드 실패로 남아있을 수 있는 .part 파일을 먼저 정리
   await rm(partialPath, { force: true });
 
-  const writer = createWriteStream(partialPath);
+  // 보안: 다중 사용자 환경에서 임시 파일을 바꿔치기하는 TOCTOU 공격 방어를 위해 권한을 0o600(-rw-------)으로 못 박음
+  const writer = createWriteStream(partialPath, { mode: 0o600 });
   const reader = response.body.getReader();
   let receivedBytes = 0;
   let lastDrawnAt = 0;
+
+  // Magic Byte Check Variables
+  let magicChecked = false;
+  let magicBuffer: Buffer | null = null;
+  const MAX_DOWNLOAD_SIZE = 150 * 1024 * 1024 * 1024; // 150GB 최대 용량 제한 퓨즈
 
   try {
 
@@ -81,6 +95,25 @@ export async function downloadGgufFile(target: DownloadTarget): Promise<Download
       }
 
       receivedBytes += value.byteLength;
+
+      // 보안: 악의적인 파일 폭탄(Disk Exhaustion / Zip Bomb) 차단 (150GB 퓨즈)
+      if (receivedBytes > MAX_DOWNLOAD_SIZE) {
+        throw new CliError("보안 오류: 지정된 다운로드 최대 용량(150GB)을 초과하는 특대형 파일이 감지되어 시스템 보호를 위해 스트림을 차단합니다.");
+      }
+
+      // 보안: 확장자 위장 방지 GGUF Magic Header 시그니처 (첫 4바이트) 검증
+      if (!magicChecked) {
+        magicBuffer = magicBuffer ? Buffer.concat([magicBuffer, Buffer.from(value)]) : Buffer.from(value);
+        if (magicBuffer.length >= 4) {
+          const magicStr = magicBuffer.toString("utf8", 0, 4);
+          if (magicStr !== "GGUF") {
+            throw new CliError(`보안 오류: 이 파일은 GGUF 모델 구조가 아닌 위장 파일로 의심됩니다. (시그니처 불일치: ${magicStr})`);
+          }
+          magicChecked = true;
+          magicBuffer = null; // 메모리 해제
+        }
+      }
+
       if (!writer.write(Buffer.from(value))) {
         await once(writer, "drain");
       }
