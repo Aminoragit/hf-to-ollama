@@ -9,7 +9,6 @@ export interface CliOptions {
   nonInteractive?: boolean;
   yes?: boolean;
   dryRun?: boolean;
-  local?: string;
 }
 
 export interface HfFileEntry {
@@ -58,3 +57,4 @@ export interface InstallManifest {
   parameters: ParameterEntry[];
   createdAt: string;
 }
+export const BACK = Symbol("BACK");

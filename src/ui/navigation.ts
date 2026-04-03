@@ -1,23 +1,23 @@
-import { select } from "@inquirer/prompts";
+import { backableSelect } from "./prompts.js";
 import { formatBytes } from "./output.js";
-import type { HfFileEntry } from "../types.js";
+import { BACK, type HfFileEntry } from "../types.js";
 import { t } from "../i18n.js";
 
-type NavChoice = { type: "back" } | { type: "dir"; name: string } | { type: "file"; file: HfFileEntry };
+type NavChoice = { type: "back_dir" } | { type: "dir"; name: string } | { type: "file"; file: HfFileEntry };
 
-export async function navigateAndSelectFile(files: HfFileEntry[], message: string, requiredExtension?: ".gguf" | ".safetensors"): Promise<HfFileEntry> {
+export async function navigateAndSelectFile(files: HfFileEntry[], message: string, requiredExtension?: ".gguf"): Promise<HfFileEntry | typeof BACK> {
   const filteredFiles = requiredExtension ? files.filter(f => f.path.toLowerCase().endsWith(requiredExtension)) : files;
   
   if (filteredFiles.length === 0) {
-    throw new Error(t("err.no_gguf")); // Will be replaced with generic error text.
+    throw new Error(t("err.no_gguf"));
   }
 
   let currentDir = "";
 
   while (true) {
-    const choices = [];
+    const choices: any[] = [];
     if (currentDir !== "") {
-      choices.push({ name: "🔙 ..", value: { type: "back" } as NavChoice });
+      choices.push({ name: "🔙 ..", value: { type: "back_dir" } as NavChoice });
     }
 
     const dirs = new Set<string>();
@@ -49,20 +49,25 @@ export async function navigateAndSelectFile(files: HfFileEntry[], message: strin
       });
     }
 
-    const answer = await select<NavChoice>({
+    const answer = await backableSelect({
       message: `${message} [${currentDir === "" ? "/" : "/" + currentDir}]`,
       choices,
       pageSize: 15,
     });
 
-    if (answer.type === "back") {
+    if (answer === BACK) {
+      return BACK;
+    }
+
+    const navAnswer = answer as NavChoice;
+    if (navAnswer.type === "back_dir") {
       const parts = currentDir.replace(/\/$/, "").split("/");
       parts.pop();
       currentDir = parts.length > 0 ? parts.join("/") + "/" : "";
-    } else if (answer.type === "dir") {
-      currentDir += answer.name + "/";
-    } else if (answer.type === "file") {
-      return answer.file;
+    } else if (navAnswer.type === "dir") {
+      currentDir += navAnswer.name + "/";
+    } else if (navAnswer.type === "file") {
+      return navAnswer.file;
     }
   }
 }

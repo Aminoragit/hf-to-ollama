@@ -10,7 +10,7 @@ import { loadInstallManifests, removeInstallDirectory, saveInstallManifest } fro
 import { writeModelfile } from "../services/modelfile.js";
 import { confirmDeleteLocalFiles, inputOptionalParameter, selectConfigAction, selectManifest, selectAdapterAction, navigateAndSelectFile } from "../ui/prompts.js";
 import { info, success, formatBytes } from "../ui/output.js";
-import type { HfFileEntry, InstallManifest, ParameterEntry } from "../types.js";
+import { BACK, type HfFileEntry, type InstallManifest, type ParameterEntry } from "../types.js";
 
 function upsertParameter(parameters: ParameterEntry[], key: string, value: string | undefined): ParameterEntry[] {
   const remaining = parameters.filter((parameter) => parameter.key !== key);
@@ -22,13 +22,20 @@ function upsertParameter(parameters: ParameterEntry[], key: string, value: strin
   return remaining;
 }
 
-async function updateManifestParameters(manifest: InstallManifest): Promise<InstallManifest> {
+async function updateManifestParameters(manifest: InstallManifest): Promise<InstallManifest | typeof BACK> {
   const currentMap = new Map(manifest.parameters.map((parameter) => [parameter.key, parameter.value]));
 
   const temperature = await inputOptionalParameter("temperature", currentMap.get("temperature") ?? "1.0");
+  if (temperature === BACK) return BACK;
+
   const topP = await inputOptionalParameter("top_p", currentMap.get("top_p") ?? "");
+  if (topP === BACK) return BACK;
+
   const topK = await inputOptionalParameter("top_k", currentMap.get("top_k") ?? "");
+  if (topK === BACK) return BACK;
+
   const numCtx = await inputOptionalParameter("num_ctx", currentMap.get("num_ctx") ?? "");
+  if (numCtx === BACK) return BACK;
 
   let parameters = [...manifest.parameters];
   parameters = upsertParameter(parameters, "temperature", temperature);
@@ -49,7 +56,10 @@ export async function runConfigCommand(): Promise<void> {
   }
 
   const selectedManifest = await selectManifest(manifests);
+  if (selectedManifest === BACK) return;
+
   const action = await selectConfigAction();
+  if (action === BACK) return;
 
   if (action === "show") {
     const modelfilePath = path.join(selectedManifest.targetDir, "Modelfile");
@@ -65,14 +75,18 @@ export async function runConfigCommand(): Promise<void> {
     success(t("success.model_deleted", { model: selectedManifest.modelName }));
 
     const shouldDeleteLocalFiles = await confirmDeleteLocalFiles();
-    if (shouldDeleteLocalFiles) {
-      await removeInstallDirectory(selectedManifest.targetDir);
-      success(t("success.dir_deleted", { path: selectedManifest.targetDir }));
+    if (shouldDeleteLocalFiles === BACK || !shouldDeleteLocalFiles) {
+      return;
     }
+    
+    await removeInstallDirectory(selectedManifest.targetDir);
+    success(t("success.dir_deleted", { path: selectedManifest.targetDir }));
     return;
   }
 
   const adapterAction = await selectAdapterAction(selectedManifest.adapterFilename);
+  if (adapterAction === BACK) return;
+
   let updatedAdapterFilename = selectedManifest.adapterFilename;
 
   if (adapterAction === "remove") {
@@ -80,12 +94,14 @@ export async function runConfigCommand(): Promise<void> {
   } else if (adapterAction === "change") {
     const accessToken = process.env.HF_TOKEN ?? process.env.HUGGING_FACE_HUB_TOKEN;
     const files = await getRepoFiles(selectedManifest.repoId, undefined, accessToken);
-    const adapterCandidates = files.filter((file: HfFileEntry) => path.basename(file.path) !== selectedManifest.ggufFilename && Boolean(file.path.toLowerCase().endsWith(".gguf") || file.path.toLowerCase().endsWith(".safetensors")));
+    const adapterCandidates = files.filter((file: HfFileEntry) => path.basename(file.path) !== selectedManifest.ggufFilename && file.path.toLowerCase().endsWith(".gguf"));
     if (adapterCandidates.length === 0) {
       throw new CliError(t("err.no_gguf"));
     }
     
     const newAdapterFile = await navigateAndSelectFile(adapterCandidates, t("prompt.use_adapter"));
+    if (newAdapterFile === BACK) return;
+
     info(t("info.download_adapter_start"));
     const downloadResult = await downloadGgufFile({
       repoId: selectedManifest.repoId,
@@ -103,7 +119,11 @@ export async function runConfigCommand(): Promise<void> {
   }
 
   let updatedManifest: InstallManifest = { ...selectedManifest, adapterFilename: updatedAdapterFilename };
-  updatedManifest = await updateManifestParameters(updatedManifest);
+  const paramsResult = await updateManifestParameters(updatedManifest);
+  if (paramsResult === BACK) return;
+  
+  updatedManifest = paramsResult;
+  
   const modelfilePath = await writeModelfile(updatedManifest.targetDir, {
     ggufFilename: updatedManifest.ggufFilename,
     adapterFilename: updatedManifest.adapterFilename,

@@ -23,6 +23,7 @@ import {
   Separator,
   makeTheme,
 } from "@inquirer/core";
+import { BACK } from "../types.js";
 import { styleText } from "node:util";
 import figures from "@inquirer/figures";
 
@@ -161,6 +162,12 @@ const patchedSearch = createPrompt(<Value,>(config: SearchConfig<Value>, done: (
   const selectedChoice = searchResults[active!] as any;
 
   useKeypress(async (key: any, rl: any) => {
+    if (key.name === "escape") {
+      setStatus("done");
+      done(BACK as any);
+      return;
+    }
+
     if (isEnterKey(key)) {
       isNavigating.current = false;
       if (selectedChoice) {

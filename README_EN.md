@@ -36,12 +36,24 @@
   Supports selecting GGUF and ADAPTER files, configuring parameters, auto-downloading, and creating models seamlessly.
   <br />
 
+- **🔍 Real-time Model Search**  
+  Type a model name or keyword and the tool will search the Hugging Face Hub for GGUF-compatible models in real-time. Browse results sorted by popularity and select with arrow keys.
+  <br />
+
+- **📁 Virtual Directory Navigation**  
+  Browse hundreds of model files in a clean, hierarchical directory structure right in your terminal.
+  <br />
+
 - **⚙️ Simple Management (Config)**  
   Provides features to inspect the generated `Modelfile`, quickly regenerate models with updated parameters, and delete installed models with a single click.
   <br />
 
-- **🤖 Fast Non-interactive Mode**  
-  Supports passing configuration via CLI parameters directly, allowing you to bypass prompts entirely. Ideal for shell scripts and automated (CI/CD) pipelines.
+- **🤖 Fast Non-interactive Mode & Local Bypass (`--local`)**  
+  Supports passing configuration via CLI parameters directly for shell scripts and CI/CD pipelines. If you already have GGUF files downloaded locally, use the `--local` option to skip downloads and create models in under 0.1 seconds.
+  <br />
+
+- **🛡️ Built-in Security**  
+  Includes multi-layered security defenses: path traversal prevention, model name injection blocking, GGUF magic signature verification, download size limits (150GB), symlink filtering, HF token masking in error logs, and more.
 
 <br />
 <br />
@@ -138,7 +150,22 @@ hf-to-ollama config
 <br />
 <br />
 
-### 3️⃣ Non-interactive Install (for Scripts)
+### 3️⃣ Instant Model Creation from Local Files (`--local`)
+
+If you already have GGUF files downloaded locally, use the `--local` option to skip the download step and create Ollama models directly.
+
+```bash
+hf-to-ollama install --local <path_to_directory_containing_gguf_files>
+```
+
+- Recursively scans the specified local directory (including subdirectories) to automatically discover GGUF files.
+- The remaining steps (file selection → ADAPTER → parameters → model creation) proceed identically to the interactive mode.
+- Completes model registration and creation in under **0.1 seconds** with no network communication.
+
+<br />
+<br />
+
+### 4️⃣ Non-interactive Install (for Scripts)
 
 Declare all parameters in a single command, skipping any user prompts entirely. Very useful when creating automated pipelines.
 
@@ -160,6 +187,31 @@ hf-to-ollama install \
 ```
 
 *💡 Append `--token <your_access_token>` to the command if you're trying to download gated models.*
+
+<br />
+<br />
+
+---
+
+<br />
+<br />
+
+## 🛡️ Security Features
+
+`hf-to-ollama` is distributed as a public npm package and includes multi-layered security defenses against potential abuse:
+
+| Defense | Description |
+|---|---|
+| **Path Traversal Prevention** | Validates that downloaded files cannot escape the designated save directory. |
+| **Model Name Validation** | Blocks shell metacharacters, path separators, and other dangerous characters in model names. |
+| **Modelfile Injection Prevention** | Blocks newline injection in parameter values to prevent malicious directive insertion. |
+| **Disk Exhaustion Protection** | Immediately terminates streams exceeding 150GB to prevent disk space exhaustion attacks. |
+| **GGUF Magic Signature Check** | Verifies the first 4 bytes of downloaded files to detect disguised malicious executables. |
+| **Symlink Filtering** | Ignores symbolic links during local directory scanning to prevent system file leakage. |
+| **HF Token Masking** | Automatically redacts authentication tokens from error messages and stack traces. |
+| **API Rate Limiting** | Applies 300ms debounce to real-time searches to prevent HF server overload. |
+| **Loop Prevention** | Force-terminates the process after 5 consecutive invalid inputs. |
+| **Temp File Permissions** | Sets owner-only permissions (`0o600`) on in-progress `.part` download files. |
 
 <br />
 <br />

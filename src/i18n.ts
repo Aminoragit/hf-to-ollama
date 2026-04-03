@@ -19,7 +19,6 @@ const ko: MessageMap = {
   "opt.non_interactive": "대화형 입력 없이 실행",
   "opt.yes": "기존 파일이 있어도 자동 덮어쓰기",
   "opt.dry_run": "실제 다운로드와 ollama create 없이 계획만 출력",
-  "opt.local": "Hugging Face 다운로드 대신 사용할 로컬 GGUF 디렉토리",
   "error.unknown": "알 수 없는 오류가 발생했습니다.",
   "prompt.repo": "Hugging Face 경로를 입력하세요.",
   "prompt.repo.required": "Hugging Face 경로를 입력해야 합니다.",
@@ -29,6 +28,9 @@ const ko: MessageMap = {
   "prompt.select_input_mode": "Hugging Face 모델을 어떤 방식으로 지정하시겠습니까?",
   "choice.input_direct": "주소 직접 입력 (예: username/model)",
   "choice.input_search": "이름으로 모델 검색",
+  "choice.input_local": "로컬 경로에서 GGUF 가져오기",
+  "prompt.local_path": "GGUF 파일이 있는 로컬 폴더의 절대 경로를 입력하세요.",
+  "prompt.local_path.required": "로컬 경로를 입력해야 합니다.",
   "prompt.save_dir": "모델 저장 경로를 입력하세요.",
   "prompt.save_dir.required": "저장 경로는 비워둘 수 없습니다.",
   "prompt.param_input": (params) => `${params.label} 값을 입력하세요. 비워두면 건너뜁니다.`,
@@ -41,7 +43,7 @@ const ko: MessageMap = {
   "prompt.select_action": "실행할 작업을 선택하세요.",
   "prompt.adapter_action": "ADAPTER 설정을 변경하시겠습니까?",
   "prompt.delete_local": "로컬 GGUF/Modelfile 저장 디렉터리도 함께 삭제하시겠습니까?",
-  "prompt.select_format": "저장소에 GGUF와 Safetensors가 모두 존재합니다. 어떤 방식으로 설치하시겠습니까?",
+  "prompt.select_format": "저장소에 GGUF 파일이 존재합니다. 어떤 방식으로 설치하시겠습니까?",
   "choice.show": "View (Modelfile 보기)",
   "choice.update": "Edit (모델 설정 편집)",
   "choice.delete": "설치 모델 삭제",
@@ -50,8 +52,6 @@ const ko: MessageMap = {
   "choice.change_adapter": "새 ADAPTER 선택",
   "choice.format_gguf": "GGUF 모델 설치",
   "choice.format_gguf_desc": "단일 GGUF 파일을 하나만 다운로드하여 빠르게 설치합니다.",
-  "choice.format_safetensors": "Safetensors 저장소 설치",
-  "choice.format_safetensors_desc": "핵심 파일 전체(.safetensors, .json 등)를 일괄 다운로드한 후, Ollama를 통해 변환을 수행합니다.",
   "info.found_gguf": (params) => `탐색 기능용으로 파일 ${params.count}개를 찾았습니다.`,
   "info.adapter_candidates": (params) => `ADAPTER 후보 ${params.count}개를 찾았습니다.`,
   "info.selected_model": (params) => `선택된 본체 파일: ${params.path} (${params.size})`,
@@ -109,7 +109,6 @@ const en: MessageMap = {
   "opt.non_interactive": "Run without interactive prompts",
   "opt.yes": "Overwrite existing files automatically",
   "opt.dry_run": "Show the plan without downloading or running ollama create",
-  "opt.local": "Local directory containing GGUF files to use instead of Hugging Face",
   "error.unknown": "An unknown error occurred.",
   "prompt.repo": "Enter the Hugging Face path.",
   "prompt.repo.required": "You must enter a Hugging Face path.",
@@ -119,6 +118,9 @@ const en: MessageMap = {
   "prompt.select_input_mode": "How would you like to specify the Hugging Face model?",
   "choice.input_direct": "Enter Repository ID directly (e.g., username/model)",
   "choice.input_search": "Search models by name",
+  "choice.input_local": "Import GGUF from local path",
+  "prompt.local_path": "Enter the absolute path to the folder containing GGUF files.",
+  "prompt.local_path.required": "You must enter a local path.",
   "prompt.save_dir": "Enter the model save directory.",
   "prompt.save_dir.required": "The save directory cannot be empty.",
   "prompt.param_input": (params) => `Enter ${params.label}. Leave blank to skip.`,
@@ -131,7 +133,7 @@ const en: MessageMap = {
   "prompt.select_action": "Choose an action.",
   "prompt.adapter_action": "Do you want to change the ADAPTER?",
   "prompt.delete_local": "Also delete the local GGUF/Modelfile directory?",
-  "prompt.select_format": "Both GGUF and Safetensors exist in this repository. How would you like to install?",
+  "prompt.select_format": "GGUF files exist in this repository. How would you like to install?",
   "choice.show": "View Modelfile",
   "choice.update": "Edit Model configuration",
   "choice.delete": "Delete installed model",
@@ -140,8 +142,6 @@ const en: MessageMap = {
   "choice.change_adapter": "Select a new ADAPTER",
   "choice.format_gguf": "Install GGUF Model",
   "choice.format_gguf_desc": "Download a single GGUF file for fast installation.",
-  "choice.format_safetensors": "Install Safetensors Repository",
-  "choice.format_safetensors_desc": "Batch download core files (.safetensors, .json) and auto-convert internally via Ollama.",
   "info.found_gguf": (params) => `Found ${params.count} files for navigation.`,
   "info.adapter_candidates": (params) => `Found ${params.count} ADAPTER candidates.`,
   "info.selected_model": (params) => `Selected main file: ${params.path} (${params.size})`,
@@ -225,11 +225,9 @@ const ja: MessageMap = {
   "success.adapter_download_complete": (p) => `ADAPTER ダウンロード完了: ${p.path} (${p.size})`,
   "success.model_created": (p) => `Ollama モデルを作成しました: ${p.model}`,
   "success.model_deleted": (p) => `Ollama モデルを削除しました: ${p.model}`,
-  "prompt.select_format": "リポジトリにGGUFとSafetensorsの両方が存在します。どちらの形式でインストールしますか？",
+  "prompt.select_format": "リポジトリにGGUFが存在します。インストール方法を選択してください。",
   "choice.format_gguf": "GGUFモデルをインストール",
-  "choice.format_gguf_desc": "単一のGGUFファイルを1つだけダウンロードして高速にインストールします。",
-  "choice.format_safetensors": "Safetensorsリポジトリをインストール",
-  "choice.format_safetensors_desc": "コアファイル（.safetensors, .json等）を一括ダウンロード後、Ollama内部で変換します。"
+  "choice.format_gguf_desc": "単一のGGUFファイルを1つだけダウンロードして高速にインストールします。"
 };
 
 const zh: MessageMap = {
@@ -264,11 +262,9 @@ const zh: MessageMap = {
   "info.model_create_start": "开始创建 Ollama 模型。",
   "success.model_created": (p) => `Ollama 模型已创建: ${p.model}`,
   "success.model_deleted": (p) => `Ollama 模型已删除: ${p.model}`,
-  "prompt.select_format": "存储库中同时存在 GGUF 和 Safetensors。请问您想要以哪种格式安装？",
+  "prompt.select_format": "存储库中存在 GGUF 文件。请选择安装方式。",
   "choice.format_gguf": "安装 GGUF 模型",
-  "choice.format_gguf_desc": "大模型快速安装（仅下载单个预量化 GGUF 文件）。",
-  "choice.format_safetensors": "安装 Safetensors 存储库",
-  "choice.format_safetensors_desc": "批量下载核心文件（.safetensors，.json等）后，通过 Ollama 内部转化为模型。"
+  "choice.format_gguf_desc": "大模型快速安装（仅下载单个预量化 GGUF 文件）。"
 };
 
 const hi: MessageMap = {

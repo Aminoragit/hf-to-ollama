@@ -2,23 +2,20 @@ import { access, mkdir, stat } from "node:fs/promises";
 import path from "node:path";
 
 import type { CliOptions, HfFileEntry, ParameterEntry } from "../types.js";
-import { getRepoFiles } from "../adapters/hf.js";
-import { getLocalRepoFiles } from "../adapters/local.js";
 import { createModel, ensureOllamaServer, resolveOllamaCommand } from "../adapters/ollama.js";
 import { CliError } from "../errors.js";
 import { t } from "../i18n.js";
 import { downloadGgufFile } from "../services/download.js";
 import { saveInstallManifest } from "../services/manifest.js";
 import { writeModelfile } from "../services/modelfile.js";
-import { getDefaultTargetDir, sanitizeSegment } from "../services/paths.js";
-import { confirmOverwrite, confirmUseAdapter, inputModelName, navigateAndSelectFile } from "../ui/prompts.js";
 import { formatBytes, info, success, warn } from "../ui/output.js";
 
 export function resolveAccessToken(cliToken?: string): string | undefined {
   return cliToken ?? process.env.HF_TOKEN ?? process.env.HUGGING_FACE_HUB_TOKEN;
 }
 
-function buildDefaultModelName(repoId: string, filePath: string, isLocal = false): string {
+export function buildDefaultModelName(repoId: string, filePath: string, isLocal = false): string {
+  const sanitizeSegment = (s: string) => s.replace(/[^a-zA-Z0-9.-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
   if (isLocal) {
     const filePart = path.basename(filePath, path.extname(filePath)).split(".")[0] || "model";
     return `local-${sanitizeSegment(filePart)}`;
@@ -28,7 +25,7 @@ function buildDefaultModelName(repoId: string, filePath: string, isLocal = false
   return `${repoPart}-${sanitizeSegment(filePart)}`;
 }
 
-function parseParameterEntries(rawParameters: string[] | undefined): ParameterEntry[] {
+export function parseParameterEntries(rawParameters: string[] | undefined): ParameterEntry[] {
   if (!rawParameters || rawParameters.length === 0) {
     return [];
   }
@@ -54,100 +51,64 @@ function parseParameterEntries(rawParameters: string[] | undefined): ParameterEn
   });
 }
 
-async function ensureSafeWrite(pathLabel: string, nonInteractive: boolean, yes = false): Promise<void> {
+export async function ensureSafeWrite(pathLabel: string, nonInteractive: boolean, yes = false): Promise<void> {
+  // Note: confirmOverwrite is an interactive prompt, so the caller should handle it if needed
+  // In pure execution mode, we might just check and throw or proceed if 'yes' is true.
   try {
     await access(pathLabel);
+    if (!yes && nonInteractive) {
+       throw new CliError(t("err.path_conflict", { path: pathLabel }));
+    }
+    // Caller should have confirmed overwrite before calling this in interactive mode
   } catch {
     return;
   }
-
-  if (yes) {
-    return;
-  }
-
-  if (nonInteractive) {
-    throw new CliError(t("err.path_conflict", { path: pathLabel }));
-  }
-
-  const confirmed = await confirmOverwrite(pathLabel);
-  if (!confirmed) {
-    throw new CliError(t("err.overwrite_cancelled"));
-  }
 }
 
-function findFileByPath(files: HfFileEntry[], filePath: string, label: string): HfFileEntry {
-  const selected = files.find((file) => file.path === filePath);
-  if (!selected) {
-    throw new CliError(t("err.file_not_found", { label, path: filePath }));
-  }
-
-  return selected;
+export interface ImportGgufOptions {
+  repoId: string;
+  selectedFile: HfFileEntry;
+  selectedAdapterFile?: HfFileEntry;
+  targetDir: string;
+  modelName: string;
+  parameters: ParameterEntry[];
+  isLocalMode?: boolean;
+  revision?: string;
+  accessToken?: string;
+  dryRun?: boolean;
+  nonInteractive?: boolean;
+  yes?: boolean;
 }
 
-export async function importFromHuggingFace(repoId: string, options: CliOptions, files: HfFileEntry[]): Promise<void> {
-  const accessToken = resolveAccessToken(options.token);
-  const parameterEntries = parseParameterEntries(options.parameter);
+export async function executeGgufImport(options: ImportGgufOptions) {
+  const {
+    repoId,
+    selectedFile,
+    selectedAdapterFile,
+    targetDir,
+    modelName,
+    parameters,
+    isLocalMode,
+    revision,
+    accessToken,
+    dryRun,
+    nonInteractive,
+    yes
+  } = options;
 
-  await importGgufFlow(repoId, options, files, accessToken, parameterEntries);
-}
-
-async function importGgufFlow(repoId: string, options: CliOptions, files: HfFileEntry[], accessToken?: string, parameterEntries: ParameterEntry[] = []) {
-  info(t("info.found_gguf", { count: files.filter(f => f.path.toLowerCase().endsWith(".gguf")).length }));
-
-  const ggufFiles = files.filter(f => f.path.toLowerCase().endsWith(".gguf"));
-
-  let selectedFile: HfFileEntry;
-  if (options.file) {
-    selectedFile = findFileByPath(ggufFiles, options.file, "GGUF");
-  } else if (options.nonInteractive) {
-    throw new CliError(t("err.non_interactive_file"));
-  } else {
-    selectedFile = await navigateAndSelectFile(ggufFiles, t("prompt.model_file"), ".gguf");
-  }
-
-  let selectedAdapterFile: HfFileEntry | undefined;
-  const adapterCandidates = ggufFiles.filter((file) => file.path !== selectedFile.path);
-
-  if (options.adapter) {
-    if (options.adapter === selectedFile.path) {
-      throw new CliError(t("err.same_adapter"));
-    }
-    selectedAdapterFile = findFileByPath(adapterCandidates, options.adapter, "ADAPTER GGUF");
-  } else if (adapterCandidates.length > 0 && !options.nonInteractive) {
-    const shouldUseAdapter = await confirmUseAdapter();
-    if (shouldUseAdapter) {
-      info(t("info.adapter_candidates", { count: adapterCandidates.length }));
-      selectedAdapterFile = await navigateAndSelectFile(adapterCandidates, "Select an ADAPTER GGUF file to apply.", ".gguf");
-    }
-  }
-
-  const targetDir = path.resolve(options.dir ?? getDefaultTargetDir(repoId), sanitizeSegment(path.dirname(selectedFile.path) || "root"));
   await mkdir(targetDir, { recursive: true });
 
-  info(t("info.selected_model", { path: selectedFile.path, size: formatBytes(selectedFile.size) }));
-  if (selectedAdapterFile) {
-    info(t("info.selected_adapter", { path: selectedAdapterFile.path, size: formatBytes(selectedAdapterFile.size) }));
-  }
-  if (parameterEntries.length > 0) {
-    info(t("info.parameters_applied", { count: parameterEntries.length }));
-    parameterEntries.forEach((parameter) => info(t("info.parameter_line", { key: parameter.key, value: parameter.value })));
-  }
-  info(t("info.target_dir", { path: targetDir }));
-
-  const defaultModelName = buildDefaultModelName(repoId, selectedFile.path, Boolean(options.local));
-  const modelName = options.name ? options.name : options.nonInteractive ? defaultModelName : await inputModelName(defaultModelName);
-
   const ggufPath = path.join(targetDir, path.basename(selectedFile.path));
-  await ensureSafeWrite(ggufPath, Boolean(options.nonInteractive), options.yes);
+  await ensureSafeWrite(ggufPath, Boolean(nonInteractive), yes);
 
   const adapterPath = selectedAdapterFile ? path.join(targetDir, path.basename(selectedAdapterFile.path)) : undefined;
   if (adapterPath) {
-    await ensureSafeWrite(adapterPath, Boolean(options.nonInteractive), options.yes);
+    await ensureSafeWrite(adapterPath, Boolean(nonInteractive), yes);
   }
 
-  if (options.dryRun) {
+  if (dryRun) {
     const adapterMessage = selectedAdapterFile ? `, adapter=${selectedAdapterFile.path}` : "";
-    const parameterMessage = parameterEntries.length > 0 ? `, parameters=${parameterEntries.map((entry) => `${entry.key}=${entry.value}`).join(",")}` : "";
+    const parameterMessage = parameters.length > 0 ? `, parameters=${parameters.map((entry) => `${entry.key}=${entry.value}`).join(",")}` : "";
     success(t("success.dry_run", { file: selectedFile.path, extra: `${adapterMessage}${parameterMessage}`, out: ggufPath, model: modelName }));
     return;
   }
@@ -159,14 +120,14 @@ async function importGgufFlow(repoId: string, options: CliOptions, files: HfFile
   let ggufFilename: string;
   let adapterFilename: string | undefined;
 
-  if (options.local) {
+  if (isLocalMode) {
     ggufFilename = selectedFile.path;
     if (selectedAdapterFile) {
       adapterFilename = selectedAdapterFile.path;
     }
   } else {
     info(t("info.download_model_start"));
-    const downloadResult = await downloadGgufFile({ repoId, file: selectedFile, revision: options.revision, accessToken, targetDir });
+    const downloadResult = await downloadGgufFile({ repoId, file: selectedFile, revision, accessToken, targetDir });
     ggufFilename = path.basename(downloadResult.filePath);
     if (downloadResult.alreadyExists) {
       success(t("success.already_downloaded", { path: downloadResult.filePath, size: formatBytes(downloadResult.bytesWritten) }));
@@ -176,7 +137,7 @@ async function importGgufFlow(repoId: string, options: CliOptions, files: HfFile
 
     if (selectedAdapterFile) {
       info(t("info.download_adapter_start"));
-      const adapterDownloadResult = await downloadGgufFile({ repoId, file: selectedAdapterFile, revision: options.revision, accessToken, targetDir });
+      const adapterDownloadResult = await downloadGgufFile({ repoId, file: selectedAdapterFile, revision, accessToken, targetDir });
       adapterFilename = path.basename(adapterDownloadResult.filePath);
       
       if (adapterDownloadResult.alreadyExists) {
@@ -190,12 +151,12 @@ async function importGgufFlow(repoId: string, options: CliOptions, files: HfFile
   const modelfilePath = await writeModelfile(targetDir, {
     ggufFilename,
     adapterFilename,
-    parameters: parameterEntries,
+    parameters: parameters,
   });
   info(t("info.modelfile_created", { path: modelfilePath }));
   info(t("info.model_create_start"));
 
-  if (!options.local) {
+  if (!isLocalMode) {
     try {
       const stats = await stat(path.join(targetDir, ggufFilename));
       if (stats.size === 0) {
@@ -215,12 +176,10 @@ async function importGgufFlow(repoId: string, options: CliOptions, files: HfFile
     targetDir,
     ggufFilename,
     adapterFilename,
-    parameters: parameterEntries,
+    parameters: parameters,
     createdAt: new Date().toISOString(),
   });
 
   success(t("success.model_created", { model: modelName }));
   info(t("info.run_command", { model: modelName }));
 }
-
-
