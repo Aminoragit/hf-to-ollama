@@ -1,0 +1,40 @@
+{
+  "name": "ollama-hf-install",
+  "version": "0.1.0",
+  "description": "Step-by-step installer and manager for importing Hugging Face GGUF models into Ollama.",
+  "main": "dist/cli.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli.js",
+    "prepublishOnly": "npm run build"
+  },
+  "bin": {
+    "ollama-hf-install": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "ollama",
+    "huggingface",
+    "gguf",
+    "installer",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@huggingface/hub": "^2.11.0",
+    "@inquirer/prompts": "^8.3.2",
+    "commander": "^14.0.3",
+    "execa": "^9.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
