@@ -116,6 +116,7 @@ hf-to-ollama install
 4. Set hardware generation parameters (`temperature`, `top_p`, `top_k`, `num_ctx`)
 5. Specify your **local save directory**
 6. Watch the download progress, followed by automatic `Modelfile` generation and `ollama create`
+   - ⚡ **Smart Download**: Redundant downloads are instantly skipped if the exact GGUF file already exists locally.
 
 <br />
 <br />
@@ -129,9 +130,9 @@ hf-to-ollama config
 ```
 
 - View the list of currently installed Ollama models
-- Inspect the internal structure of each model's `Modelfile`
-- **Update (Regenerate)** models easily by tweaking parameters
-- **Remove** unused models
+- Inspect the internal structure of each model's `Modelfile` (**View**)
+- **Change or Remove ADAPTERs**, update generation parameters and seamlessly recreate the model (**Edit**)
+- **Remove** unused models and wipe local data (**Delete**)
 
 <br />
 <br />
