@@ -1,6 +1,6 @@
 {
   "name": "hf-to-ollama",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Step-by-step installer and manager for importing Hugging Face GGUF models into Ollama.",
   "main": "dist/cli.js",
   "scripts": {
