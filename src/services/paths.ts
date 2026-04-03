@@ -6,7 +6,7 @@ export function sanitizeSegment(value: string): string {
 }
 
 export function getInstallRootDir(): string {
-  return path.join(os.homedir(), ".ollama-hf-import");
+  return path.join(os.homedir(), ".hf-to-ollama");
 }
 
 export function getDefaultTargetDir(repoId: string): string {

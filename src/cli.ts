@@ -18,7 +18,7 @@ async function main(): Promise<void> {
   const program = new Command();
 
   program
-    .name("ollama-hf-import")
+    .name("hf-to-ollama")
     .description(t("app.description"))
     .version("0.1.0");
 

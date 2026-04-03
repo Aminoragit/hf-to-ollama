@@ -31,12 +31,39 @@ export async function resolveOllamaCommand(): Promise<string> {
     return "ollama";
   }
 
-  if (os.platform() === "win32") {
+  const platform = os.platform();
+
+  if (platform === "win32") {
     const localAppData = process.env.LOCALAPPDATA;
     const candidates = [
       localAppData ? path.join(localAppData, "Programs", "Ollama", "ollama.exe") : undefined,
       "C:\\Program Files\\Ollama\\ollama.exe",
     ].filter((value): value is string => Boolean(value));
+
+    for (const candidate of candidates) {
+      if (await exists(candidate)) {
+        return candidate;
+      }
+    }
+  } else if (platform === "darwin") {
+    const candidates = [
+      "/usr/local/bin/ollama",
+      path.join(os.homedir(), ".ollama", "ollama"),
+      "/opt/homebrew/bin/ollama",
+    ];
+
+    for (const candidate of candidates) {
+      if (await exists(candidate)) {
+        return candidate;
+      }
+    }
+  } else {
+    // Linux and other Unix-like systems
+    const candidates = [
+      "/usr/local/bin/ollama",
+      "/usr/bin/ollama",
+      path.join(os.homedir(), ".ollama", "ollama"),
+    ];
 
     for (const candidate of candidates) {
       if (await exists(candidate)) {

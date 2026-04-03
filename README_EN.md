@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🦙 ollama-hf-install</h1>
+  <h1>🦙 hf-to-ollama</h1>
   <p><strong>A CLI tool to easily install and manage Hugging Face GGUF files in Ollama 🚀</strong></p>
 
   <br />
@@ -21,7 +21,7 @@
 
 <br />
 
-> `ollama-hf-install` is a utility tool that lets you seamlessly download Hugging Face GGUF files via an interactive step-by-step selection process, and immediately create them as Ollama models.
+> `hf-to-ollama` is a utility tool that lets you seamlessly download Hugging Face GGUF files via an interactive step-by-step selection process, and immediately create them as Ollama models.
 >
 > It also offers easy management of your installed models, including parameter modification and deletion.
 
@@ -86,7 +86,7 @@ npm run build
 To install **globally** via NPM:
 
 ```bash
-npm install -g ollama-hf-install
+npm install -g hf-to-ollama
 ```
 
 <br />
@@ -106,7 +106,7 @@ npm install -g ollama-hf-install
 Execute the installation command and follow the terminal prompts to easily install your models step-by-step.
 
 ```bash
-ollama-hf-install install
+hf-to-ollama install
 ```
 
 **📌 Process:**
@@ -122,10 +122,10 @@ ollama-hf-install install
 
 ### 2️⃣ Configuration
 
-Manage your locally installed Ollama models via `ollama-hf-install`.
+Manage your locally installed Ollama models via `hf-to-ollama config`.
 
 ```bash
-ollama-hf-install config
+hf-to-ollama config
 ```
 
 - View the list of currently installed Ollama models
@@ -143,7 +143,7 @@ Declare all parameters in a single command, skipping any user prompts entirely. 
 > 📢 **Security Notice:** Do not expose sensitive or hardcoded repository details in public scripts. Use variables or placeholder names according to your environment.
 
 ```bash
-ollama-hf-install install \
+hf-to-ollama install \
   --repo <hf_repo_path> \
   --file <model_gguf.gguf> \
   --adapter <adapter_gguf.gguf> \

@@ -4,7 +4,7 @@ import path from "node:path";
 import type { InstallManifest } from "../types.js";
 import { getInstallRootDir } from "./paths.js";
 
-const MANIFEST_NAME = ".ollama-hf-import.json";
+const MANIFEST_NAME = ".hf-to-ollama.json";
 
 export function getManifestPath(targetDir: string): string {
   return path.join(targetDir, MANIFEST_NAME);

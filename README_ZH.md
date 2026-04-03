@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🦙 ollama-hf-install</h1>
+  <h1>🦙 hf-to-ollama</h1>
   <p><strong>轻松将 Hugging Face GGUF 文件安装到 Ollama 并进行管理的 CLI 工具 🚀</strong></p>
 
   <br />
@@ -21,7 +21,7 @@
 
 <br />
 
-> `ollama-hf-install` 是一款省去繁杂配置，通过交互式(Interactive)选择引导，将 Hugging Face 上的 GGUF 格式文件下载并快速生成 Ollama 模型的实用工具。
+> `hf-to-ollama` 是一款省去繁杂配置，通过交互式(Interactive)选择引导，将 Hugging Face 上的 GGUF 格式文件下载并快速生成 Ollama 模型的实用工具。
 >
 > 此外，还可以便捷地对已安装模型进行参数调整或一键卸载（删除）。
 
@@ -86,7 +86,7 @@ npm run build
 使用 NPM **全局(Global)安装** 以供任何路径下调用：
 
 ```bash
-npm install -g ollama-hf-install
+npm install -g hf-to-ollama
 ```
 
 <br />
@@ -106,7 +106,7 @@ npm install -g ollama-hf-install
 仅需在终端一次输入指令，便可依照屏幕抛出的表单清单，步步为营地顺畅完成安装。
 
 ```bash
-ollama-hf-install install
+hf-to-ollama install
 ```
 
 **📌 安装流程如下:**
@@ -122,10 +122,10 @@ ollama-hf-install install
 
 ### 2️⃣ 集中参数及环境管控 (Configuration)
 
-依赖本工具 `ollama-hf-install` ，可以把本地所留存的大型模型妥善管辖、即时刷新配置。
+依赖本工具 `hf-to-ollama` ，可以把本地所留存的大型模型妥善管辖、即时刷新配置。
 
 ```bash
-ollama-hf-install config
+hf-to-ollama config
 ```
 
 - 将所在系统里预存的全部 Ollama 局部模型作以呈现
@@ -143,7 +143,7 @@ ollama-hf-install config
 > 📢 **安全注意警示:** 针对特定 Hugging Face 源或是敏感业务模型，不要在公开剧本里让其实际名称与凭证彻底暴露（建议替换采用环境变量读取填入的办法去避免信息赤裸）。
 
 ```bash
-ollama-hf-install install \
+hf-to-ollama install \
   --repo <指定HuggingFace目录路径> \
   --file <主基座_GGUF文件名.gguf> \
   --adapter <辅微调Adapter_GGUF文件名.gguf> \

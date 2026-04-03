@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🦙 ollama-hf-install</h1>
+  <h1>🦙 hf-to-ollama</h1>
   <p><strong>Hugging Face GGUF 파일을 쉽고 빠르게 Ollama에 설치하고 관리하는 CLI 도구 🚀</strong></p>
 
   <br />
@@ -21,7 +21,7 @@
 
 <br />
 
-> `ollama-hf-install`은 복잡한 설정 과정 없이, 대화형(Interactive) 단계별 선택을 통해 Hugging Face의 GGUF 파일을 다운로드하고 Ollama 모델로 즉시 생성할 수 있도록 돕는 유틸리티입니다.  
+> `hf-to-ollama`는 복잡한 설정 과정 없이, 대화형(Interactive) 단계별 선택을 통해 Hugging Face의 GGUF 파일을 다운로드하고 Ollama 모델로 즉시 생성할 수 있도록 돕는 유틸리티입니다.  
 > 또한, 이미 설치된 모델의 파라미터 설정을 수정하거나 불필요한 모델을 간편하게 삭제할 수도 있습니다.
 
 <br />
@@ -85,7 +85,7 @@ npm run build
 시스템의 **NPM 전역(Global) 환경**에 설치하여 어디서나 바로 사용할 경우:
 
 ```bash
-npm install -g ollama-hf-install
+npm install -g hf-to-ollama
 ```
 
 <br />
@@ -105,7 +105,7 @@ npm install -g ollama-hf-install
 명령어 실행 직후 터미널에 나타나는 안내와 선택지에 따라 단계적으로 쉽게 모델을 설치할 수 있습니다.
 
 ```bash
-ollama-hf-install install
+hf-to-ollama install
 ```
 
 **📌 진행 과정:**
@@ -121,10 +121,10 @@ ollama-hf-install install
 
 ### 2️⃣ 설정 및 환경 관리 (Configuration)
 
-`ollama-hf-install`을 통해 로컬에 저장된 모델들을 손쉽게 관리하고 세부 설정을 갱신합니다.
+`hf-to-ollama`를 통해 로컬에 저장된 모델들을 손쉽게 관리하고 세부 설정을 갱신합니다.
 
 ```bash
-ollama-hf-install config
+hf-to-ollama config
 ```
 
 - 현재 시스템에 설치된 로컬 Ollama 모델 리스트 출력
@@ -142,7 +142,7 @@ ollama-hf-install config
 > 📢 **보안 주의:** 아래 예시와 같이 특정 Hugging Face 저장소와 모델명이 스크립트 코드에 그대로 평문으로 노출되지 않도록, 실행 환경에 맞게 변수로 전달하거나 플레이스홀더를 변경해 사용하시길 권장합니다.
 
 ```bash
-ollama-hf-install install \
+hf-to-ollama install \
   --repo <해당_허깅페이스_경로> \
   --file <모델_GGUF파일명.gguf> \
   --adapter <어댑터_GGUF파일명.gguf> \
