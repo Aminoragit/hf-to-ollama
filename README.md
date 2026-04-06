@@ -1,13 +1,13 @@
 <div align="center">
   <h1>🦙 hf-to-ollama</h1>
-  <p><strong>Hugging Face GGUF 파일을 쉽고 빠르게 Ollama에 설치하고 관리하는 CLI 도구 🚀</strong></p>
+  <p><strong>A CLI tool to easily install and manage Hugging Face GGUF files in Ollama 🚀</strong></p>
 
   <br />
 
   <p>
-    <a href="https://github.com/Aminoragit/hf-to-ollama/blob/main/README.md" title="한국어 (Korean)"><img src="https://flagicons.lipis.dev/flags/4x3/kr.svg" width="24" height="18" alt="KR" style="vertical-align: middle; border-radius: 2px;" /> <strong>Korean</strong></a>
+    <a href="https://github.com/Aminoragit/hf-to-ollama/blob/main/README.md" title="English"><img src="https://flagicons.lipis.dev/flags/4x3/us.svg" width="24" height="18" alt="US" style="vertical-align: middle; border-radius: 2px;" /> <strong>English</strong></a>
     &nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="https://github.com/Aminoragit/hf-to-ollama/blob/main/README_EN.md" title="English"><img src="https://flagicons.lipis.dev/flags/4x3/us.svg" width="24" height="18" alt="US" style="vertical-align: middle; border-radius: 2px;" /> <strong>English</strong></a>
+    <a href="https://github.com/Aminoragit/hf-to-ollama/blob/main/README_KO.md" title="한국어 (Korean)"><img src="https://flagicons.lipis.dev/flags/4x3/kr.svg" width="24" height="18" alt="KR" style="vertical-align: middle; border-radius: 2px;" /> <strong>Korean</strong></a>
     &nbsp;&nbsp;|&nbsp;&nbsp;
     <a href="https://github.com/Aminoragit/hf-to-ollama/blob/main/README_JA.md" title="日本語 (Japanese)"><img src="https://flagicons.lipis.dev/flags/4x3/jp.svg" width="24" height="18" alt="JP" style="vertical-align: middle; border-radius: 2px;" /> <strong>Japanese</strong></a>
     &nbsp;&nbsp;|&nbsp;&nbsp;
@@ -21,38 +21,39 @@
 
 <br />
 
-> `hf-to-ollama`는 복잡한 설정 과정 없이, 대화형(Interactive) 단계별 선택을 통해 Hugging Face의 GGUF 파일을 다운로드하고 Ollama 모델로 즉시 생성할 수 있도록 돕는 유틸리티입니다.  
-> 또한, 이미 설치된 모델의 파라미터 설정을 수정하거나 불필요한 모델을 간편하게 삭제할 수도 있습니다.
+> `hf-to-ollama` is a utility tool that lets you seamlessly download Hugging Face GGUF files via an interactive step-by-step selection process, and immediately create them as Ollama models.
+>
+> It also offers easy management of your installed models, including parameter modification and deletion.
 
 <br />
 <br />
 
-## ✨ 주요 기능 (Features)
+## ✨ Features
 
 <br />
 
-- **📥 직관적인 모델 설치 (Install)**  
-  GGUF 본체 및 ADAPTER 파일 선택, 시스템 파라미터값 설정, 파일 다운로드 및 모델 생성까지 모두 지원합니다.
+- **📥 Intuitive Installation (Install)**  
+  Supports selecting GGUF and ADAPTER files, configuring parameters, auto-downloading, and creating models seamlessly.
   <br />
 
-- **🔍 실시간 모델 검색 (Search)**  
-  모델 이름이나 키워드를 입력하면 Hugging Face Hub에서 GGUF 호환 모델을 실시간으로 검색하고, 인기순으로 정렬된 목록에서 방향키로 간편하게 선택할 수 있습니다.
+- **🔍 Real-time Model Search**  
+  Type a model name or keyword and the tool will search the Hugging Face Hub for GGUF-compatible models in real-time. Browse results sorted by popularity and select with arrow keys.
   <br />
 
-- **📁 가상 폴더(디렉토리) 탐색 지원**  
-  수백 개의 모델 파일 목록을 터미널에서 계층적 디렉토리 단위로 깔끔하게 탐색하고 선택할 수 있습니다.
+- **📁 Virtual Directory Navigation**  
+  Browse hundreds of model files in a clean, hierarchical directory structure right in your terminal.
   <br />
 
-- **⚙️ 간편한 환경 관리 (Config)**  
-  생성된 모델의 `Modelfile` 구조를 확인하고, 자유로운 파라미터 수정 및 즉각적인 재생성이 가능합니다. 원클릭 모델 삭제 기능도 제공합니다.
+- **⚙️ Simple Management (Config)**  
+  Provides features to inspect the generated `Modelfile`, quickly regenerate models with updated parameters, and delete installed models with a single click.
   <br />
 
-- **🤖 비대화식 쾌속 설치 (Non-interactive) 및 로컬 우회 (`--local`)**  
-  셸 스크립트 기반 동작 외에도, 이미 다운로드된 로컬 저장소가 있다면 `--local` 옵션을 통해 다운로드 없이 0.1초 만에 모델 명세서 연동을 완료합니다.
+- **🤖 Fast Non-interactive Mode & Local Bypass (`--local`)**  
+  Supports passing configuration via CLI parameters directly for shell scripts and CI/CD pipelines. If you already have GGUF files downloaded locally, use the `--local` option to skip downloads and create models in under 0.1 seconds.
   <br />
 
-- **🛡️ 보안 강화 (Security)**  
-  경로 탐색(Path Traversal) 차단, 모델명 인젝션 방지, GGUF 매직 시그니처 검증, 다운로드 용량 상한(150GB), 심볼릭 링크 무시, HF 토큰 로그 마스킹 등 다계층 보안 방어 로직이 내장되어 있습니다.
+- **🛡️ Built-in Security**  
+  Includes multi-layered security defenses: path traversal prevention, model name injection blocking, GGUF magic signature verification, download size limits (150GB), symlink filtering, HF token masking in error logs, and more.
 
 <br />
 <br />
@@ -62,16 +63,16 @@
 <br />
 <br />
 
-## 📋 시스템 전제 조건 (Prerequisites)
+## 📋 Prerequisites
 
 <br />
 
-본 도구를 사용하기 전에 다음 프로그램 및 권한이 필요합니다:
+Before using this tool, make sure you have the following installed:
 
-- **[Node.js](https://nodejs.org/)** (버전 22 이상)
-- **[Ollama](https://ollama.com/)** (시스템 사전 설치 및 로컬 서버 백그라운드 실행 필수)
-- *(선택)* **[Hugging Face Access Token](https://huggingface.co/settings/tokens)**  
-  (비공개 리포지토리나 구독형 모델 접근 시 필요하며, `HF_TOKEN` 환경변수 또는 `--token` 옵션으로 사용)
+- **[Node.js](https://nodejs.org/)** (Version 22 or higher)
+- **[Ollama](https://ollama.com/)** (Must be pre-installed and running as a background service)
+- *(Optional)* **[Hugging Face Access Token](https://huggingface.co/settings/tokens)**  
+  (Required for private or gated models. Supply it via the `HF_TOKEN` environment variable or `--token` option)
 
 <br />
 <br />
@@ -81,11 +82,11 @@
 <br />
 <br />
 
-## 📦 패키지 설치 (Installation)
+## 📦 Installation
 
 <br />
 
-개발을 위해 **로컬 환경**에서 직접 빌드 및 실행할 경우:
+To build and run in your **local environment**:
 
 ```bash
 npm install
@@ -94,7 +95,7 @@ npm run build
 
 <br />
 
-시스템의 **NPM 전역(Global) 환경**에 설치하여 어디서나 바로 사용할 경우:
+To install **globally** via NPM:
 
 ```bash
 npm install -g hf-to-ollama
@@ -108,84 +109,84 @@ npm install -g hf-to-ollama
 <br />
 <br />
 
-## 💻 사용 가이드 (Usage)
+## 💻 Usage Guide
 
 <br />
 
-### 1️⃣ 대화형 설치 모드 (Interactive Install)
+### 1️⃣ Interactive Install
 
-명령어 실행 직후 터미널에 나타나는 안내와 선택지에 따라 단계적으로 쉽게 모델을 설치할 수 있습니다.
+Execute the installation command and follow the terminal prompts to easily install your models step-by-step.
 
 ```bash
 hf-to-ollama install
 ```
 
-**📌 진행 과정:**
-1. **모델 지정 방식 선택**: `주소 직접 입력` (예: `username/repo`) 또는 `이름으로 모델 검색` 중 선택
-   - **(검색 선택 시)**: 모델명이나 키워드를 입력하면, Hugging Face 서버에서 실시간으로 가장 인기 있는 모델(GGUF 포함)들을 검색하여 보여줍니다. 방향키로 목록에서 원하는 모델을 쉽게 고를 수 있습니다.
-2. 목록에서 모델 기본 본체가 될 **GGUF 파일 선택**
-3. ADAPTER (LoRA 등) 파일 추가 적용 여부 결정 및 파일 선택
-4. 모델 구동을 위한 생성 파라미터(`temperature`, `top_p`, `top_k`, `num_ctx`) 입력
-5. 모델 GGUF 파일이 저장될 **로컬 디렉토리 경로 지정**
-6. 파일 다운로드 및 `Modelfile` 자동 생성 완료 후 `ollama create` 자동 실행
-   - ⚡ 스마트 다운로드 로직: 폴더에 이미 동일 용량의 GGUF 파일이 다운로드 되어 있다면 불필요한 재다운로드를 즉시 생략합니다.
+**📌 Process:**
+1. **Choose Input Mode**: Select either `Enter Repository ID directly` (e.g., `username/repo`) or `Search models by name`.
+   - **(If Search is selected)**: Simply type a keyword, and the tool will fetch and display the most popular models featuring GGUF formats directly from the Hugging Face Hub in real-time. Use arrow keys to select your model.
+2. Select the main **GGUF file** from the list
+3. Confirm and select an ADAPTER (e.g., LoRA) file if needed
+4. Set hardware generation parameters (`temperature`, `top_p`, `top_k`, `num_ctx`)
+5. Specify your **local save directory**
+6. Watch the download progress, followed by automatic `Modelfile` generation and `ollama create`
+   - ⚡ **Smart Download**: Redundant downloads are instantly skipped if the exact GGUF file already exists locally.
 
 <br />
 <br />
 
-### 2️⃣ 설정 및 환경 관리 (Configuration)
+### 2️⃣ Configuration
 
-`hf-to-ollama`를 통해 로컬에 저장된 모델들을 손쉽게 관리하고 세부 설정을 갱신합니다.
+Manage your locally installed Ollama models via `hf-to-ollama config`.
 
 ```bash
 hf-to-ollama config
 ```
 
-- 현재 시스템에 설치된 로컬 Ollama 모델 리스트 출력
-- 각 모델의 `Modelfile` 내부 작동 구조 및 파라미터 열람 (**View**)
-- 잘못 설정된 **ADAPTER 교체 및 제거**, 특정 파라미터 수정 후 해당 모델의 간편 재생성 (**Edit**)
-- 더 이상 사용하지 않는 설치 모델 **삭제 (Delete)**
+- View the list of currently installed Ollama models
+- Inspect the internal structure of each model's `Modelfile` (**View**)
+- **Change or Remove ADAPTERs**, update generation parameters and seamlessly recreate the model (**Edit**)
+- **Remove** unused models and wipe local data (**Delete**)
 
 <br />
 <br />
 
-### 3️⃣ 로컬 모델 파일로 즉시 생성 (`--local`)
+### 3️⃣ Instant Model Creation from Local Files (`--local`)
 
-이미 GGUF 파일이 로컬에 다운로드되어 있는 경우, `--local` 옵션으로 다운로드 과정을 건너뛰고 곧바로 Ollama 모델을 생성할 수 있습니다.
+If you already have GGUF files downloaded locally, use the `--local` option to skip the download step and create Ollama models directly.
 
 ```bash
-hf-to-ollama install --local <GGUF_파일이_있는_디렉토리_경로>
+hf-to-ollama install --local <path_to_directory_containing_gguf_files>
 ```
 
-- 지정된 로컬 디렉토리(및 하위 경로)를 재귀 탐색하여 GGUF 파일을 자동으로 찾아냅니다.
-- 이후의 과정(파일 선택 → ADAPTER → 파라미터 → 모델 생성)은 대화형 모드와 동일하게 진행됩니다.
-- 네트워크 통신 없이 **0.1초** 이내에 모델 명세서 연동 및 생성이 완료됩니다.
+- Recursively scans the specified local directory (including subdirectories) to automatically discover GGUF files.
+- The remaining steps (file selection → ADAPTER → parameters → model creation) proceed identically to the interactive mode.
+- Completes model registration and creation in under **0.1 seconds** with no network communication.
 
 <br />
 <br />
 
-### 4️⃣ 자동화 스크립트 특화 비대화형 설치 (Non-interactive)
+### 4️⃣ Non-interactive Install (for Scripts)
 
-단일 명령어로 필요한 모든 파라미터를 작성하여 사용자 프롬프트 개입 없이 곧바로 설치를 완료합니다. 자동화 파이프라인이나 셸 스크립트 작성 시 매우 유용합니다.
+Declare all parameters in a single command, skipping any user prompts entirely. Very useful when creating automated pipelines.
 
-> 📢 **보안 주의:** 아래 예시와 같이 특정 Hugging Face 저장소와 모델명이 스크립트 코드에 그대로 평문으로 노출되지 않도록, 실행 환경에 맞게 변수로 전달하거나 플레이스홀더를 변경해 사용하시길 권장합니다.
+> 📢 **Security Notice:** Do not expose sensitive or hardcoded repository details in public scripts. Use variables or placeholder names according to your environment.
 
 ```bash
 hf-to-ollama install \
-  --repo <해당_허깅페이스_경로> \
-  --file <모델_GGUF파일명.gguf> \
-  --adapter <어댑터_GGUF파일명.gguf> \
+  --repo <hf_repo_path> \
+  --file <model_gguf.gguf> \
+  --adapter <adapter_gguf.gguf> \
   --parameter temperature=1.0 \
   --parameter top_p=0.95 \
   --parameter top_k=64 \
   --parameter num_ctx=32768 \
-  --dir <저장될_로컬_디렉토리_경로> \
-  --name <생성할_Ollama_모델명> \
+  --dir <local_save_directory> \
+  --name <ollama_model_name_to_create> \
   --non-interactive \
   --yes
 ```
 
-*💡 인증 토큰이 필요한 모델일 경우 명령어 맨 끝에 `--token <huggingface_access_token>` 옵션을 함께 포함시켜야 합니다.*
+*💡 Append `--token <your_access_token>` to the command if you're trying to download gated models.*
 
 <br />
 <br />
@@ -195,22 +196,22 @@ hf-to-ollama install \
 <br />
 <br />
 
-## 🛡️ 보안 기능 (Security)
+## 🛡️ Security Features
 
-`hf-to-ollama`는 npm 패키지로 배포되는 CLI 도구인 만큼, 다양한 잠재적 공격 시나리오에 대비한 다계층 보안 방어 로직이 내장되어 있습니다:
+`hf-to-ollama` is distributed as a public npm package and includes multi-layered security defenses against potential abuse:
 
-| 방어 항목 | 설명 |
+| Defense | Description |
 |---|---|
-| **경로 탐색 차단** | 다운로드 파일이 지정된 저장 디렉토리 범위를 벗어나지 못하도록 경로를 검증합니다. |
-| **모델명 검증** | 쉘 메타문자, 경로 구분자 등 위험한 문자가 포함된 모델 이름을 차단합니다. |
-| **Modelfile 인젝션 방지** | 파라미터 값에 줄바꿈 문자 삽입을 통한 악성 지시자 주입을 원천 차단합니다. |
-| **디스크 고갈 방지** | 다운로드 용량이 150GB를 초과하면 스트림을 즉시 차단합니다. |
-| **GGUF 매직 시그니처 검증** | 파일 헤더의 첫 4바이트를 검사하여 위장된 악성 파일을 감지합니다. |
-| **심볼릭 링크 무시** | 로컬 경로 탐색 시 시스템 파일을 가리키는 심볼릭 링크를 자동 무시합니다. |
-| **HF 토큰 마스킹** | 에러 메시지 및 스택 트레이스에서 인증 토큰이 노출되지 않도록 자동 마스킹합니다. |
-| **API 과부하 방지** | 실시간 검색에 300ms 디바운스를 적용하여 HF 서버 과부하를 예방합니다. |
-| **무한 루프 차단** | 잘못된 입력이 5회 이상 반복되면 프로세스를 강제 종료합니다. |
-| **임시 파일 권한 통제** | 다운로드 중인 `.part` 파일에 소유자 전용 권한(`0o600`)을 설정합니다. |
+| **Path Traversal Prevention** | Validates that downloaded files cannot escape the designated save directory. |
+| **Model Name Validation** | Blocks shell metacharacters, path separators, and other dangerous characters in model names. |
+| **Modelfile Injection Prevention** | Blocks newline injection in parameter values to prevent malicious directive insertion. |
+| **Disk Exhaustion Protection** | Immediately terminates streams exceeding 150GB to prevent disk space exhaustion attacks. |
+| **GGUF Magic Signature Check** | Verifies the first 4 bytes of downloaded files to detect disguised malicious executables. |
+| **Symlink Filtering** | Ignores symbolic links during local directory scanning to prevent system file leakage. |
+| **HF Token Masking** | Automatically redacts authentication tokens from error messages and stack traces. |
+| **API Rate Limiting** | Applies 300ms debounce to real-time searches to prevent HF server overload. |
+| **Loop Prevention** | Force-terminates the process after 5 consecutive invalid inputs. |
+| **Temp File Permissions** | Sets owner-only permissions (`0o600`) on in-progress `.part` download files. |
 
 <br />
 <br />
@@ -220,9 +221,9 @@ hf-to-ollama install \
 <br />
 <br />
 
-## 📝 자동 생성되는 Modelfile 구조 (예시)
+## 📝 Generated Modelfile Example
 
-위 과정을 거쳐 백그라운드 환경에서 `ollama create` 명령 시 참조되는 생성된 모델의 `Modelfile` 내부 구조는 다음과 같습니다:
+Based on your settings, the background engine writes a `Modelfile` similar to the one below, which is then fed into `ollama create`:
 
 ```text
 FROM ./your-model.gguf
@@ -241,9 +242,9 @@ PARAMETER num_ctx 32768
 <br />
 <br />
 
-## 💬 문의 및 버그 신고 (Issues)
+## 💬 Issues & Feedback
 
-사용 중 문제가 발생하거나 기능 개선 제안이 있으시면 GitHub Issues에 남겨주세요:
+If you encounter any bugs or have feature requests, please open an issue on GitHub:
 
 **👉 https://github.com/Aminoragit/hf-to-ollama/issues**
 
