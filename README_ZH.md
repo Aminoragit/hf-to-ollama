@@ -5,13 +5,13 @@
   <br />
 
   <p>
-    <a href="./README.md" title="한국어 (Korean)"><img src="https://flagicons.lipis.dev/flags/4x3/kr.svg" width="24" height="18" alt="KR" style="vertical-align: middle; border-radius: 2px;" /> <strong>Korean</strong></a>
+    <a href="https://github.com/Aminoragit/hf-to-ollama/blob/main/README.md" title="한국어 (Korean)"><img src="https://flagicons.lipis.dev/flags/4x3/kr.svg" width="24" height="18" alt="KR" style="vertical-align: middle; border-radius: 2px;" /> <strong>Korean</strong></a>
     &nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="./README_EN.md" title="English"><img src="https://flagicons.lipis.dev/flags/4x3/us.svg" width="24" height="18" alt="US" style="vertical-align: middle; border-radius: 2px;" /> <strong>English</strong></a>
+    <a href="https://github.com/Aminoragit/hf-to-ollama/blob/main/README_EN.md" title="English"><img src="https://flagicons.lipis.dev/flags/4x3/us.svg" width="24" height="18" alt="US" style="vertical-align: middle; border-radius: 2px;" /> <strong>English</strong></a>
     &nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="./README_JA.md" title="日本語 (Japanese)"><img src="https://flagicons.lipis.dev/flags/4x3/jp.svg" width="24" height="18" alt="JP" style="vertical-align: middle; border-radius: 2px;" /> <strong>Japanese</strong></a>
+    <a href="https://github.com/Aminoragit/hf-to-ollama/blob/main/README_JA.md" title="日本語 (Japanese)"><img src="https://flagicons.lipis.dev/flags/4x3/jp.svg" width="24" height="18" alt="JP" style="vertical-align: middle; border-radius: 2px;" /> <strong>Japanese</strong></a>
     &nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="./README_ZH.md" title="中文 (Chinese)"><img src="https://flagicons.lipis.dev/flags/4x3/cn.svg" width="24" height="18" alt="CN" style="vertical-align: middle; border-radius: 2px;" /> <strong>Chinese</strong></a>
+    <a href="https://github.com/Aminoragit/hf-to-ollama/blob/main/README_ZH.md" title="中文 (Chinese)"><img src="https://flagicons.lipis.dev/flags/4x3/cn.svg" width="24" height="18" alt="CN" style="vertical-align: middle; border-radius: 2px;" /> <strong>Chinese</strong></a>
   </p>
 </div>
 
@@ -181,5 +181,19 @@ PARAMETER top_p 0.95
 PARAMETER top_k 64
 PARAMETER num_ctx 32768
 ```
+
+<br />
+<br />
+
+---
+
+<br />
+<br />
+
+## 💬 问题反馈 (Issues)
+
+使用过程中如遇到问题或有功能建议，欢迎在 GitHub Issues 中留言：
+
+**👉 https://github.com/Aminoragit/hf-to-ollama/issues**
 
 <br />

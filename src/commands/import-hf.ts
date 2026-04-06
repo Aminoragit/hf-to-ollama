@@ -21,8 +21,17 @@ export function buildDefaultModelName(repoId: string, filePath: string, isLocal 
     return `local-${sanitizeSegment(filePart)}`;
   }
   const repoPart = repoId.split("/").map(sanitizeSegment).join("-");
-  const filePart = path.basename(filePath, path.extname(filePath)).split(".")[0] || "model";
-  return `${repoPart}-${sanitizeSegment(filePart)}`;
+  const rawFilePart = path.basename(filePath, path.extname(filePath)).split(".")[0] || "model";
+  const filePart = sanitizeSegment(rawFilePart);
+
+  // 파일명이 repo 모델명으로 시작하는 경우 중복 방지 (예: repo=A/ModelName, file=ModelName-Q8.gguf)
+  const repoModelName = repoId.includes("/") ? sanitizeSegment(repoId.split("/").slice(1).join("/")) : "";
+  if (repoModelName && filePart.toLowerCase().startsWith(repoModelName.toLowerCase())) {
+    const suffix = filePart.slice(repoModelName.length).replace(/^-+/, "");
+    return suffix ? `${repoPart}-${suffix}` : repoPart;
+  }
+
+  return `${repoPart}-${filePart}`;
 }
 
 export function parseParameterEntries(rawParameters: string[] | undefined): ParameterEntry[] {

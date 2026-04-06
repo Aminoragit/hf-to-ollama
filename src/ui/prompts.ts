@@ -15,6 +15,7 @@ export const backableInput = createPrompt<string | typeof BACK, { message: strin
     const [status, setStatus] = useState("idle");
     const [defaultValue] = useState(config.default || "");
     const [errorMsg, setErrorMsg] = useState<string | undefined>();
+    const [currentInput, setCurrentInput] = useState("");
     const prefix = usePrefix({ status });
 
     useKeypress((key, rl) => {
@@ -28,7 +29,10 @@ export const backableInput = createPrompt<string | typeof BACK, { message: strin
           done(answer);
         } else {
           setErrorMsg(typeof isValid === "string" ? isValid : "Invalid input");
+          setCurrentInput(rl.line);
         }
+      } else {
+        setCurrentInput(rl.line);
       }
     });
 
@@ -37,7 +41,8 @@ export const backableInput = createPrompt<string | typeof BACK, { message: strin
       return `${prefix} ${message}`;
     }
 
-    let out = `${prefix} ${message} ${styleText("dim", defaultValue ? `(${defaultValue})` : "")}`;
+    const hint = !currentInput && defaultValue ? styleText("dim", `(${defaultValue})`) : "";
+    let out = `${prefix} ${message} ${hint}`;
     if (errorMsg) {
       out += `\n${styleText("red", ">> " + errorMsg)}`;
     }
