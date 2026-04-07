@@ -48,10 +48,6 @@
   Provides features to inspect the generated `Modelfile`, quickly regenerate models with updated parameters, and delete installed models with a single click.
   <br />
 
-- **🤖 Fast Non-interactive Mode & Local Bypass (`--local`)**  
-  Supports passing configuration via CLI parameters directly for shell scripts and CI/CD pipelines. If you already have GGUF files downloaded locally, use the `--local` option to skip downloads and create models in under 0.1 seconds.
-  <br />
-
 - **🛡️ Built-in Security**  
   Includes multi-layered security defenses: path traversal prevention, model name injection blocking, GGUF magic signature verification, download size limits (150GB), symlink filtering, HF token masking in error logs, and more.
 
@@ -150,22 +146,7 @@ hf-to-ollama config
 <br />
 <br />
 
-### 3️⃣ Instant Model Creation from Local Files (`--local`)
-
-If you already have GGUF files downloaded locally, use the `--local` option to skip the download step and create Ollama models directly.
-
-```bash
-hf-to-ollama install --local <path_to_directory_containing_gguf_files>
-```
-
-- Recursively scans the specified local directory (including subdirectories) to automatically discover GGUF files.
-- The remaining steps (file selection → ADAPTER → parameters → model creation) proceed identically to the interactive mode.
-- Completes model registration and creation in under **0.1 seconds** with no network communication.
-
-<br />
-<br />
-
-### 4️⃣ Non-interactive Install (for Scripts)
+### 3️⃣ Non-interactive Install (for Scripts)
 
 Declare all parameters in a single command, skipping any user prompts entirely. Very useful when creating automated pipelines.
 

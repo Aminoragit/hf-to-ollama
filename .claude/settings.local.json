@@ -4,7 +4,10 @@
       "Bash(node:*)",
       "Bash(npm install:*)",
       "Bash(npm run:*)",
-      "Bash(git remote:*)"
+      "Bash(git remote:*)",
+      "Bash([ -f /tmp/ld.py ])",
+      "Read(//tmp/**)",
+      "Skill(bkit:pdca)"
     ]
   }
 }
